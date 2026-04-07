@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="视频库 - 浏览所有体操舞蹈教学视频，支持搜索和筛选功能">
+    <meta name="keywords" content="视频库,体操,舞蹈,教学,搜索,筛选">
+    <title>视频库 - 体操舞蹈教学视频库</title>
+
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- ============================================
+         导航栏
+         ============================================ -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Logo -->
+            <a href="./LearningPage.html" class="navbar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+                <span>舞蹈教学</span>
+            </a>
+
+            <!-- 导航菜单 -->
+            <ul class="navbar-menu">
+                <li><a href="./LearningPage.html" class="navbar-link">首页</a></li>
+                <li><a href="./video-library.html" class="navbar-link active">视频库</a></li>
+                <li><a href="user-center.html" class="navbar-link">个人中心</a></li>
+                <li><a href="./LearningPage.html#about" class="navbar-link">关于</a></li>
+            </ul>
+
+            <!-- 收藏数量显示 -->
+            <div class="navbar-favorites">
+                <a href="user-center.html" class="favorites-link" aria-label="查看收藏">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path
+                            d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z">
+                        </path>
+                    </svg>
+                    <span class="favorites-count" id="favoritesCount">0</span>
+                </a>
+            </div>
+
+            <!-- 移动端菜单按钮 -->
+            <button class="navbar-toggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ============================================
+         页面标题区域
+         ============================================ -->
+    <header class="hero" style="padding: 2rem 0;">
+        <div class="container">
+            <h1 class="hero-title" style="font-size: 2rem;">视频库</h1>
+            <p class="hero-description">浏览所有体操舞蹈教学视频，找到适合您的课程</p>
+        </div>
+    </header>
+
+    <!-- ============================================
+         搜索和筛选区域
+         ============================================ -->
+    <section class="search-filter-section">
+        <div class="container">
+            <div class="search-filter-container">
+                <!-- 搜索框 -->
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="搜索视频标题、描述或讲师..." aria-label="搜索视频">
+                    <button class="clear-search" id="clearSearch" aria-label="清除搜索" style="display: none;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- 筛选器 -->
+                <div class="filter-group">
+                    <span class="filter-label">分类：</span>
+                    <div class="checkbox-filters category-filters" id="categoryFilters">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="基础动作" data-category="basic">
+                            <span>基础动作</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="舞蹈组合" data-category="dance">
+                            <span>舞蹈组合</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="技巧训练" data-category="skills">
+                            <span>技巧训练</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="表演展示" data-category="performance">
+                            <span>表演展示</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <span class="filter-label">难度：</span>
+                    <div class="checkbox-filters difficulty-filters" id="difficultyFilters">
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="easy" data-difficulty="easy">
+                            <span>入门级</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="medium" data-difficulty="medium">
+                            <span>进阶级</span>
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" value="hard" data-difficulty="hard">
+                            <span>专业级</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 排序 -->
+                <div class="filter-group">
+                    <span class="filter-label">排序：</span>
+                    <select class="filter-select sort-select" id="sortSelect" aria-label="排序方式">
+                        <option value="newest">最新添加</option>
+                        <option value="popularity">热度（观看次数）</option>
+                        <option value="duration">时长</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 结果计数和筛选状态 -->
+            <div class="filter-status">
+                <span class="results-count" id="resultsCount">共 0 个视频</span>
+                <button class="clear-filters" id="clearFilters" style="display: none;">
+                    清除所有筛选
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         视频网格区域
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <div class="videos-grid">
+                <!-- 视频卡片将由 JavaScript 动态生成 -->
+            </div>
+
+            <!-- ============================================
+                 分页区域
+                 ============================================ -->
+            <div class="pagination">
+                <button class="pagination-button pagination-prev" aria-label="上一页">
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                    上一页
+                </button>
+                <div class="pagination-numbers">
+                    <!-- 页码将由 JavaScript 动态生成 -->
+                </div>
+                <button class="pagination-button pagination-next" aria-label="下一页">
+                    下一页
+                    <svg style="width: 16px; height: 16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================
+         页脚
+         ============================================ -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <!-- 关于 -->
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>
+                        专业的体操舞蹈教学平台，提供从基础到高级的完整课程体系。
+                        让每个人都能享受舞蹈的快乐。
+                    </p>
+                </div>
+
+                <!-- 快速链接 -->
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <nav class="footer-links">
+                        <a href="./LearningPage.html">首页</a>
+                        <a href="video-library.html">视频库</a>
+                        <a href="./LearningPage.html#about">关于我们</a>
+                        <a href="#">联系方式</a>
+                    </nav>
+                </div>
+
+                <!-- 分类 -->
+                <div class="footer-section">
+                    <h4>热门分类</h4>
+                    <nav class="footer-links">
+                        <a href="video-library.html">基础动作</a>
+                        <a href="video-library.html">舞蹈组合</a>
+                        <a href="video-library.html">技巧训练</a>
+                        <a href="video-library.html">表演展示</a>
+                    </nav>
+                </div>
+
+                <!-- 联系方式 -->
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>
+                        如有任何问题或建议，欢迎随时联系我们。
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <a href="#" style="color: var(--text-light); margin-right: 1rem;">
+                            <svg style="width: 24px; height: 24px;" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                            </svg>
+                        </a>
+                        <a href="#" style="color: var(--text-light); margin-right: 1rem;">
+                            <svg style="width: 24px; height: 24px;" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                            </svg>
+                        </a>
+                        <a href="#" style="color: var(--text-light);">
+                            <svg style="width: 24px; height: 24px;" fill="currentColor" viewBox="0 0 24 24">
+                                <path
+                                    d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 版权信息 -->
+            <div class="footer-bottom">
+                <p>&copy; 2024 体操舞蹈教学视频库. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 引入脚本文件 -->
+    <script src="script.js"></script>
+</body>
+
+</html>

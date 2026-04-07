@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="个人中心 - 查看您的播放历史、收藏视频和学习进度">
+    <meta name="keywords" content="个人中心,播放历史,收藏,学习进度">
+    <title>个人中心 - 体操舞蹈教学视频库</title>
+    
+    <!-- 引入样式文件 -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- ============================================
+         导航栏
+         ============================================ -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <!-- Logo -->
+            <a href="index.html" class="navbar-logo">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+                <span>舞蹈教学</span>
+            </a>
+            
+            <!-- 导航菜单 -->
+            <ul class="navbar-menu">
+                <li><a href="index.html" class="navbar-link">首页</a></li>
+                <li><a href="video-library.html" class="navbar-link">视频库</a></li>
+                <li><a href="user-center.html" class="navbar-link active">个人中心</a></li>
+                <li><a href="index.html#about" class="navbar-link">关于</a></li>
+            </ul>
+            
+            <!-- 收藏数量显示 -->
+            <div class="navbar-favorites">
+                <a href="user-center.html" class="favorites-link" aria-label="查看收藏">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                    </svg>
+                    <span class="favorites-count" id="favoritesCount">0</span>
+                </a>
+            </div>
+            
+            <!-- 移动端菜单按钮 -->
+            <button class="navbar-toggle" aria-label="切换菜单">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- ============================================
+         页面标题区域
+         ============================================ -->
+    <header class="hero" style="padding: 2rem 0;">
+        <div class="container">
+            <h1 class="hero-title" style="font-size: 2rem;">个人中心</h1>
+            <p class="hero-description">查看您的学习记录、收藏视频和进度报告</p>
+        </div>
+    </header>
+    
+    <!-- ============================================
+         学习进度报告区域
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">学习进度报告</h2>
+            <p class="section-subtitle">查看您在各分类的学习完成情况</p>
+            
+            <div class="progress-report-container">
+                <div class="progress-summary">
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 12l2 2 4-4"></path>
+                                <circle cx="12" cy="12" r="10"></circle>
+                            </svg>
+                        </div>
+                        <div class="summary-content">
+                            <div class="summary-value" id="totalLearned">0</div>
+                            <div class="summary-label">已学习视频</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                            </svg>
+                        </div>
+                        <div class="summary-content">
+                            <div class="summary-value" id="totalFavorites">0</div>
+                            <div class="summary-label">收藏视频</div>
+                        </div>
+                    </div>
+                    
+                    <div class="summary-card">
+                        <div class="summary-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="summary-content">
+                            <div class="summary-value" id="totalProgress">0%</div>
+                            <div class="summary-label">总体进度</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="category-progress-list" id="categoryProgressList">
+                    <!-- 分类进度将由 JavaScript 动态生成 -->
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============================================
+         播放历史区域
+         ============================================ -->
+    <section class="section" style="background-color: var(--bg-secondary);">
+        <div class="container">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 0.5rem;">播放历史</h2>
+                    <p class="section-subtitle" style="text-align: left; margin-bottom: 0;">最近观看的视频记录（最多显示10个）</p>
+                </div>
+                <button class="clear-history-btn" id="clearHistoryBtn" aria-label="清除播放历史">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    清除历史
+                </button>
+            </div>
+            
+            <div class="videos-grid" id="historyVideosGrid">
+                <!-- 历史视频将由 JavaScript 动态生成 -->
+                <div class="empty-state" id="historyEmptyState">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <p>暂无播放历史</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============================================
+         收藏视频区域
+         ============================================ -->
+    <section class="section">
+        <div class="container">
+            <h2 class="section-title">我的收藏</h2>
+            <p class="section-subtitle">您收藏的视频列表</p>
+            
+            <div class="videos-grid" id="favoritesVideosGrid">
+                <!-- 收藏视频将由 JavaScript 动态生成 -->
+                <div class="empty-state" id="favoritesEmptyState">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path>
+                    </svg>
+                    <p>暂无收藏视频</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- ============================================
+         页脚
+         ============================================ -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <!-- 关于 -->
+                <div class="footer-section">
+                    <h4>关于我们</h4>
+                    <p>
+                        专业的体操舞蹈教学平台，提供从基础到高级的完整课程体系。
+                        让每个人都能享受舞蹈的快乐。
+                    </p>
+                </div>
+                
+                <!-- 快速链接 -->
+                <div class="footer-section">
+                    <h4>快速链接</h4>
+                    <nav class="footer-links">
+                        <a href="index.html">首页</a>
+                        <a href="video-library.html">视频库</a>
+                        <a href="user-center.html">个人中心</a>
+                        <a href="index.html#about">关于我们</a>
+                    </nav>
+                </div>
+                
+                <!-- 分类 -->
+                <div class="footer-section">
+                    <h4>热门分类</h4>
+                    <nav class="footer-links">
+                        <a href="video-library.html">基础动作</a>
+                        <a href="video-library.html">舞蹈组合</a>
+                        <a href="video-library.html">技巧训练</a>
+                        <a href="video-library.html">表演展示</a>
+                    </nav>
+                </div>
+                
+                <!-- 联系方式 -->
+                <div class="footer-section">
+                    <h4>联系我们</h4>
+                    <p>
+                        如有任何问题或建议，欢迎随时联系我们。
+                    </p>
+                    <div style="margin-top: 1rem;">
+                        <a href="#" style="color: var(--text-light); margin-right: 1rem;">
+                            <svg style="width: 24px; height: 24px;" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/>
+                            </svg>
+                        </a>
+                        <a href="#" style="color: var(--text-light); margin-right: 1rem;">
+                            <svg style="width: 24px; height: 24px;" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                            </svg>
+                        </a>
+                        <a href="#" style="color: var(--text-light);">
+                            <svg style="width: 24px; height: 24px;" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 版权信息 -->
+            <div class="footer-bottom">
+                <p>&copy; 2024 体操舞蹈教学视频库. 保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- 引入脚本文件 -->
+    <script src="script.js"></script>
+</body>
+</html>

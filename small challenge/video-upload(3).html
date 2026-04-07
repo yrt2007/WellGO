@@ -1,0 +1,4060 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WellGo - 智能舞蹈体操教学与评估平台</title>
+  <style>
+    /* 全局样式 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --primary: #667eea;
+      --primary-dark: #5a67d8;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --accent: #7c3aed;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-300: #cbd5e1;
+      --gray-400: #94a3b8;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-800: #1e293b;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      --radius: 8px;
+      --radius-lg: 12px;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: var(--gray-800);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+      box-shadow: var(--shadow-lg);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* 导航栏 - 移动端优化 */
+    .navbar {
+      background: white;
+      padding: 0.75rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--gray-100);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      height: 60px;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      flex-shrink: 0;
+    }
+
+    .nav-brand i {
+      font-size: 1.3rem;
+    }
+
+    .nav-brand .logo-text {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    .nav-brand .platform-text {
+      display: none;
+    }
+
+    .nav-links {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 0.5rem;
+      border-top: 1px solid var(--gray-200);
+      z-index: 1000;
+      white-space: nowrap;
+    }
+
+    .nav-links.active {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .nav-link {
+      color: var(--gray-600);
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: var(--radius);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      font-size: 0.8rem;
+      flex: 1;
+      max-width: none;
+      min-width: 0px；
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--primary);
+      background: var(--gray-50);
+    }
+
+    .nav-link i {
+      font-size: 1.2rem;
+    }
+
+    .mobile-menu-btn {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: none;
+      border: none;
+      padding: 8px;
+      cursor: pointer;
+    }
+
+    .mobile-menu-btn span {
+      width: 22px;
+      height: 2px;
+      background: var(--gray-600);
+      border-radius: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+    }
+
+    .logout-btn {
+      padding: 6px 10px;
+      background: var(--gray-100);
+      border: none;
+      border-radius: var(--radius);
+      color: var(--gray-600);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 0.85rem;
+      display: none;
+    }
+
+    /* 登录/注册模态框 - 移动端优化 */
+    .auth-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+      padding: 1rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .auth-content {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 400px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 2px solid var(--gray-100);
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 1;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 15px;
+      text-align: center;
+      background: none;
+      border: none;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-500);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-height: 54px;
+    }
+
+    .auth-tab.active {
+      color: var(--primary);
+      border-bottom: 3px solid var(--primary);
+    }
+
+    .auth-form {
+      padding: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--gray-700);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-size: 1rem;
+      color: var(--gray-800);
+      transition: border-color 0.3s;
+      -webkit-appearance: none;
+      appearance: none;
+      background: white;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-footer {
+      margin-top: 16px;
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      text-align: center;
+    }
+
+    .form-footer a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    /* 主内容区 */
+    main {
+      padding: 1rem;
+      padding-bottom: 80px;
+      /* 为底部导航留出空间 */
+    }
+
+    /* Hero区域 - 移动端优化 */
+    .hero {
+      text-align: center;
+      padding: 2rem 1rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      border-radius: var(--radius-lg);
+      margin-bottom: 2rem;
+    }
+
+    .hero h1 {
+      font-size: 1.5rem;
+      margin-bottom: 0.75rem;
+      font-weight: 800;
+      line-height: 1.3;
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      opacity: 0.95;
+      margin-bottom: 1.5rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.5;
+    }
+
+    .hero-features {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .feature-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 12px;
+      border-radius: var(--radius);
+      backdrop-filter: blur(10px);
+      min-width: 100px;
+      flex: 1;
+      max-width: 120px;
+    }
+
+    .feature-icon {
+      font-size: 1.5rem;
+      margin-bottom: 6px;
+    }
+
+    .feature-item span {
+      font-size: 0.8rem;
+    }
+
+    /* 双上传区域 - 移动端优化 */
+    .upload-dual-section {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .upload-card {
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border: 2px solid var(--gray-200);
+      transition: all 0.3s ease;
+    }
+
+    .upload-card:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-md);
+    }
+
+    .upload-card.standard {
+      border-top: 4px solid var(--success);
+    }
+
+    .upload-card.practice {
+      border-top: 4px solid var(--primary);
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .card-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .standard .card-icon {
+      background: var(--success);
+    }
+
+    .practice .card-icon {
+      background: var(--primary);
+    }
+
+    /* 上传区域 - 移动端优化 */
+    .upload-area {
+      border: 3px dashed var(--gray-300);
+      border-radius: var(--radius-lg);
+      padding: 30px 15px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: var(--gray-50);
+      margin-bottom: 16px;
+      touch-action: manipulation;
+    }
+
+    .upload-area:hover,
+    .upload-area.dragover {
+      border-color: var(--primary);
+      background: #f0f9ff;
+    }
+
+    .upload-icon {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+
+    .upload-text {
+      font-size: 1rem;
+      color: var(--gray-700);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .upload-hint {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      line-height: 1.4;
+    }
+
+    /* 评估结果显示 */
+    .evaluation-section {
+      background: linear-gradient(135deg, #f8fafc, #e0e7ff);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin: 2rem 0;
+      display: none;
+    }
+
+    .evaluation-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .score-display {
+      text-align: center;
+      padding: 16px;
+      background: white;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .score-number {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .score-label {
+      color: var(--gray-600);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .feedback-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .feedback-item {
+      background: white;
+      padding: 16px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .feedback-item.good {
+      border-left-color: var(--success);
+    }
+
+    .feedback-item.warning {
+      border-left-color: var(--warning);
+    }
+
+    .feedback-item.error {
+      border-left-color: var(--danger);
+    }
+
+    .feedback-title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--gray-800);
+      font-size: 0.95rem;
+    }
+
+    .feedback-content {
+      color: var(--gray-600);
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    /* 视频对比展示 */
+    .video-comparison {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .video-wrapper {
+      position: relative;
+      background: var(--gray-800);
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 16/9;
+    }
+
+    .video-label {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      padding: 5px 10px;
+      border-radius: var(--radius);
+      font-size: 0.8rem;
+      z-index: 10;
+    }
+
+    /* 学习历史 */
+    .history-section {
+      margin-top: 2rem;
+    }
+
+    .history-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .history-card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 16px;
+      border: 1px solid var(--gray-200);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.3s ease;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+
+    .history-card:active {
+      transform: scale(0.98);
+      background: var(--gray-50);
+    }
+
+    .history-score {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .score-circle {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    /* 分数颜色类 */
+    .score-excellent {
+      background: linear-gradient(135deg, var(--success), #22c55e) !important;
+    }
+
+    .score-good {
+      background: linear-gradient(135deg, #3b82f6, #60a5fa) !important;
+    }
+
+    .score-fair {
+      background: linear-gradient(135deg, var(--warning), #fbbf24) !important;
+    }
+
+    .score-poor {
+      background: linear-gradient(135deg, var(--danger), #f87171) !important;
+    }
+
+    /* 历史详情模态框 */
+    .history-detail-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      animation: fadeIn 0.3s ease;
+      padding: 1rem;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .modal-content {
+      background: white;
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 800px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 2px solid var(--gray-100);
+      position: sticky;
+      top: 0;
+      background: white;
+      z-index: 10;
+    }
+
+    .modal-header h3 {
+      margin: 0;
+      color: var(--gray-800);
+      font-size: 1.1rem;
+    }
+
+    .modal-body {
+      padding: 20px;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.2rem;
+      color: var(--gray-500);
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      min-width: 36px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-btn:active {
+      background: var(--gray-100);
+    }
+
+    .history-score-display {
+      text-align: center;
+      padding: 12px 20px;
+      background: white;
+      border-radius: var(--radius-lg);
+      border: 2px solid var(--gray-200);
+      min-width: 120px;
+    }
+
+    .score-big {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 4px;
+    }
+
+    .detail-feedback-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .detail-feedback-item {
+      background: white;
+      padding: 12px;
+      border-radius: var(--radius);
+      border-left: 4px solid var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .detail-feedback-item.good {
+      border-left-color: var(--success);
+    }
+
+    .detail-feedback-item.warning {
+      border-left-color: var(--warning);
+    }
+
+    .detail-feedback-item.error {
+      border-left-color: var(--danger);
+    }
+
+    .improvement-suggestions {
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+      border-radius: var(--radius);
+      padding: 16px;
+      margin-top: 20px;
+    }
+
+    .improvement-suggestions h4 {
+      color: var(--primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 1rem;
+    }
+
+    .suggestion-list {
+      list-style-type: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .suggestion-item {
+      padding: 8px 0 8px 25px;
+      position: relative;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion-item::before {
+      content: '💡';
+      position: absolute;
+      left: 0;
+      top: 8px;
+    }
+
+    /* 按钮样式 - 移动端优化 */
+    .btn {
+      padding: 14px 20px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      touch-action: manipulation;
+      user-select: none;
+      min-height: 48px;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:active {
+      background: var(--primary-dark);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-warning {
+      background: var(--warning);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-large {
+      padding: 16px 24px;
+      font-size: 1rem;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    /* 状态消息 */
+    .status-message {
+      padding: 14px 16px;
+      border-radius: var(--radius);
+      margin: 16px 0;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      animation: slideIn 0.3s ease;
+      font-size: 0.9rem;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .status-message.success {
+      background: #d1fae5;
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+
+    .status-message.error {
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+    }
+
+    .status-message.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border: 1px solid #bfdbfe;
+    }
+
+    /* 页脚 */
+    footer {
+      padding: 1.5rem 1rem;
+      text-align: center;
+      color: var(--gray-600);
+      border-top: 1px solid var(--gray-200);
+      background: var(--gray-50);
+      font-size: 0.85rem;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* 表单验证错误样式 */
+    .form-group.error input,
+    .form-group.error select {
+      border-color: var(--danger);
+      background-color: #fff5f5;
+    }
+
+    .form-group.error label {
+      color: var(--danger);
+    }
+
+    .error-message {
+      color: var(--danger);
+      font-size: 0.8rem;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .error-message i {
+      margin-right: 5px;
+    }
+
+    /* 动画 */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ==================== 实时纠正模块样式 ==================== */
+    .live-correction-section {
+      margin: 2rem 0;
+      background: white;
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      border: 2px solid var(--gray-200);
+      box-shadow: var(--shadow);
+    }
+
+    .live-correction-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .live-correction-content {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .camera-container {
+      position: relative;
+      width: 100%;
+      background: var(--gray-800);
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 4/3;
+    }
+
+    #liveVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transform: scaleX(-1);
+      /* 镜像翻转，使摄像头预览更自然 */
+    }
+
+    .camera-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .pose-skeleton {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .skeleton-line {
+      stroke: #00ff00;
+      stroke-width: 2;
+      stroke-linecap: round;
+      opacity: 0.8;
+    }
+
+    .skeleton-joint {
+      fill: #ff0000;
+      r: 5;
+      filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.7));
+    }
+
+    .reference-video-container {
+      background: var(--gray-800);
+      border-radius: var(--radius);
+      overflow: hidden;
+      position: relative;
+      aspect-ratio: 16/9;
+    }
+
+    #referenceVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .correction-controls {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 16px 0;
+      flex-wrap: wrap;
+    }
+
+    .correction-metrics {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .metric-card {
+      background: white;
+      padding: 16px;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-200);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .metric-card.active {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
+    }
+
+    .metric-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      margin: 8px 0;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .metric-label {
+      color: var(--gray-600);
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .metric-status {
+      font-size: 0.75rem;
+      margin-top: 6px;
+      padding: 3px 6px;
+      border-radius: 12px;
+      display: inline-block;
+    }
+
+    .status-good {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .status-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .status-poor {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .real-time-feedback {
+      margin-top: 20px;
+      padding: 16px;
+      background: linear-gradient(135deg, #f8fafc, #e0e7ff);
+      border-radius: var(--radius);
+      border-left: 4px solid var(--primary);
+      max-height: 300px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .feedback-message {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 8px;
+      padding: 10px;
+      background: white;
+      border-radius: var(--radius);
+      border-left: 3px solid transparent;
+      animation: fadeIn 0.5s ease;
+      font-size: 0.85rem;
+    }
+
+    .feedback-message.good {
+      border-left-color: var(--success);
+      background: #f0fdf4;
+    }
+
+    .feedback-message.warning {
+      border-left-color: var(--warning);
+      background: #fffbeb;
+    }
+
+    .feedback-message.error {
+      border-left-color: var(--danger);
+      background: #fef2f2;
+    }
+
+    .feedback-icon {
+      font-size: 1rem;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .feedback-content {
+      flex: 1;
+    }
+
+    .feedback-title {
+      font-weight: 600;
+      margin-bottom: 3px;
+      font-size: 0.9rem;
+    }
+
+    .feedback-text {
+      color: var(--gray-600);
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+
+    .pose-landmark {
+      position: absolute;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #ff0000;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 0 6px rgba(255, 0, 0, 0.8);
+    }
+
+    .landmark-label {
+      position: absolute;
+      color: white;
+      font-size: 8px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 2px 4px;
+      border-radius: 3px;
+      transform: translate(-50%, -100%);
+      white-space: nowrap;
+      display: none;
+      /* 移动端隐藏标签减少干扰 */
+    }
+
+    .correction-progress {
+      height: 6px;
+      background: var(--gray-200);
+      border-radius: 3px;
+      overflow: hidden;
+      margin: 12px 0;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--danger), var(--warning), var(--success));
+      width: 0%;
+      transition: width 0.3s ease;
+      border-radius: 3px;
+    }
+
+    /* 摄像头选择器样式 */
+    .camera-selector {
+      margin-top: 12px;
+    }
+
+    .camera-select {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius);
+      font-size: 0.9rem;
+      background: white;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    /* 骨架动画 */
+    @keyframes pulse {
+      0% {
+        opacity: 0.5;
+      }
+
+      50% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0.5;
+      }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+
+    /* 实时数据表格 */
+    .real-time-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.8rem;
+    }
+
+    .real-time-table th {
+      background: var(--gray-100);
+      padding: 8px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--gray-700);
+      border-bottom: 2px solid var(--gray-200);
+      font-size: 0.75rem;
+    }
+
+    .real-time-table td {
+      padding: 8px;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.75rem;
+    }
+
+    .real-time-table tr:hover {
+      background: var(--gray-50);
+    }
+
+    /* 姿势关键点指示器 */
+    .keypoint-indicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+
+    .keypoint-detected {
+      background: var(--success);
+    }
+
+    .keypoint-missing {
+      background: var(--danger);
+    }
+
+    /* 全屏模式 */
+    .fullscreen-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.7);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      padding: 6px 10px;
+      cursor: pointer;
+      z-index: 100;
+      font-size: 0.8rem;
+      min-width: 36px;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .fullscreen-btn:active {
+      background: rgba(0, 0, 0, 0.9);
+    }
+
+    /* 动作捕捉网格 */
+    .capture-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .capture-cell {
+      aspect-ratio: 1;
+      background: var(--gray-100);
+      border-radius: var(--radius);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      color: var(--gray-500);
+      text-align: center;
+      padding: 4px;
+    }
+
+    .capture-cell.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* 倒计时样式 */
+    .countdown-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      font-size: 6rem;
+      color: white;
+      font-weight: bold;
+    }
+
+    /* 移动端特定样式 */
+    @media (max-width: 480px) {
+      .countdown-overlay {
+        font-size: 4rem;
+      }
+
+      .metric-value {
+        font-size: 1.3rem;
+      }
+
+      .hero h1 {
+        font-size: 1.3rem;
+      }
+
+      .hero-subtitle {
+        font-size: 0.85rem;
+      }
+    }
+
+    /* 平板电脑样式 */
+    @media (min-width: 768px) {
+      .navbar {
+        padding: 1rem 1.5rem;
+      }
+
+      .nav-links {
+        display: flex;
+        position: static;
+        background: none;
+        border-top: none;
+        padding: 0;
+        gap: 0.5rem;
+        justify-content: flex-end;
+      }
+
+      .nav-link {
+        flex-direction: row;
+        padding: 6px 12px;
+        font-size: 0.9rem;
+        max-width: none;
+        min-width: 0;
+      }
+
+      .mobile-menu-btn {
+        display: none;
+      }
+
+      .logout-btn {
+        display: inline-block;
+      }
+
+      .nav-brand .platform-text {
+        display: inline;
+        font-size: 0.8rem;
+      }
+
+      main {
+        padding: 1.5rem;
+        padding-bottom: 2rem;
+      }
+
+      .upload-dual-section {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .live-correction-content {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .video-comparison {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .history-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .correction-metrics {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    /* 桌面端样式 */
+    @media (min-width: 1024px) {
+      .navbar {
+        padding: 1rem 2rem;
+      }
+
+      .nav-links {
+        gap: 1rem;
+      }
+
+      main {
+        padding: 2rem;
+        padding-bottom: 2rem;
+      }
+
+      .hero {
+        padding: 3rem 2rem;
+      }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      .hero-subtitle {
+        font-size: 1.1rem;
+      }
+
+      .history-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    /* 横屏模式优化 */
+    @media (orientation: landscape) and (max-height: 600px) {
+      .navbar {
+        height: 50px;
+        padding: 0.5rem 1rem;
+      }
+
+      .hero {
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .hero h1 {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .hero-subtitle {
+        font-size: 0.8rem;
+        margin-bottom: 1rem;
+      }
+
+      .hero-features {
+        margin-top: 1rem;
+      }
+
+      .feature-item {
+        padding: 8px;
+        min-width: 80px;
+      }
+
+      .feature-icon {
+        font-size: 1.2rem;
+      }
+
+      .feature-item span {
+        font-size: 0.7rem;
+      }
+
+      .btn-large {
+        padding: 12px 20px;
+        font-size: 0.9rem;
+      }
+    }
+
+    /* 防止移动端页面缩放 */
+    input,
+    textarea,
+    select {
+      font-size: 16px !important;
+      /* 防止iOS缩放 */
+    }
+
+    /* 移动端触摸优化 */
+    .touch-optimized {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* 防止长按菜单 */
+    .no-context-menu {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    /* 移动端滚动优化 */
+    .scroll-optimized {
+      -webkit-overflow-scrolling: touch;
+      overflow-scrolling: touch;
+    }
+
+    /* 移动端视频播放优化 */
+    video {
+      object-fit: cover;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+    }
+
+    /* 移动端按钮点击效果 */
+    .mobile-tap-effect:active {
+      opacity: 0.7;
+      transform: scale(0.98);
+    }
+
+    /* 防止iOS Safari橡皮筋效果 */
+    .no-bounce {
+      overscroll-behavior: none;
+    }
+
+    /* 移动端输入框优化 */
+    .mobile-input {
+      -webkit-appearance: none;
+      appearance: none;
+      border-radius: 0;
+    }
+
+    /* 移动端固定底部导航 */
+    .mobile-bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      z-index: 1000;
+      border-top: 1px solid var(--gray-200);
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body class="no-bounce">
+  <!-- 登录/注册模态框 -->
+  <div class="auth-modal" id="authModal">
+    <div class="auth-content">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">登录</button>
+        <button class="auth-tab" data-tab="register">注册</button>
+      </div>
+
+      <!-- 登录表单 -->
+      <div class="auth-form" id="loginForm">
+        <h3 style="margin-bottom: 16px; text-align: center;">欢迎回来</h3>
+        <div class="form-group">
+          <label for="loginEmail"><i class="fas fa-envelope"></i> 邮箱</label>
+          <input type="email" id="loginEmail" placeholder="请输入邮箱" class="mobile-input">
+          <div class="error-message" id="loginEmailError"></div>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword"><i class="fas fa-lock"></i> 密码</label>
+          <input type="password" id="loginPassword" placeholder="请输入密码" class="mobile-input">
+          <div class="error-message" id="loginPasswordError"></div>
+        </div>
+        <button class="btn btn-primary btn-full mobile-tap-effect" onclick="login()">
+          <i class="fas fa-sign-in-alt"></i> 登录
+        </button>
+        <div class="form-footer">
+          <p>还没有账号？ <a href="#" onclick="switchTab('register')">立即注册</a></p>
+        </div>
+      </div>
+
+      <!-- 注册表单 -->
+      <div class="auth-form" id="registerForm" style="display: none;">
+        <h3 style="margin-bottom: 16px; text-align: center;">创建账号</h3>
+        <div class="form-group">
+          <label for="regName"><i class="fas fa-user"></i> 用户名</label>
+          <input type="text" id="regName" placeholder="请输入用户名（2-20个字符）" class="mobile-input">
+          <div class="error-message" id="regNameError"></div>
+        </div>
+        <div class="form-group">
+          <label for="regEmail"><i class="fas fa-envelope"></i> 邮箱</label>
+          <input type="email" id="regEmail" placeholder="请输入邮箱" class="mobile-input">
+          <div class="error-message" id="regEmailError"></div>
+        </div>
+        <div class="form-group">
+          <label for="regPassword"><i class="fas fa-lock"></i> 密码</label>
+          <input type="password" id="regPassword" placeholder="请输入密码（至少6位，包含字母和数字）" class="mobile-input">
+          <div class="error-message" id="regPasswordError"></div>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword"><i class="fas fa-lock"></i> 确认密码</label>
+          <input type="password" id="confirmPassword" placeholder="请再次输入密码" class="mobile-input">
+          <div class="error-message" id="confirmPasswordError"></div>
+        </div>
+        <div class="form-group">
+          <label for="userType"><i class="fas fa-graduation-cap"></i> 用户类型</label>
+          <select id="userType" class="mobile-input">
+            <option value="student">学生/学习者</option>
+            <option value="coach">教练/教师</option>
+            <option value="enthusiast">健身爱好者</option>
+            <option value="other">其他</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-full mobile-tap-effect" onclick="register()">
+          <i class="fas fa-user-plus"></i> 注册
+        </button>
+        <div class="form-footer">
+          <p>已有账号？ <a href="#" onclick="switchTab('login')">立即登录</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 历史详情模态框 -->
+  <div class="history-detail-modal" id="historyDetailModal">
+    <div class="modal-content scroll-optimized">
+      <div class="modal-header">
+        <h3><i class="fas fa-chart-line"></i> 评估详情</h3>
+        <button class="close-btn mobile-tap-effect" onclick="closeHistoryDetail()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="history-detail-info">
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h4 id="detailPracticeName">--</h4>
+              <div style="color: var(--gray-500); font-size: 0.8rem; margin-top: 4px;">
+                <i class="far fa-calendar"></i> <span id="detailDateTime">--</span>
+              </div>
+            </div>
+            <div class="history-score-display">
+              <div class="score-big" id="detailScore">0</div>
+              <div class="score-label">综合得分 / 100</div>
+            </div>
+          </div>
+
+          <div style="background: var(--gray-50); padding: 12px; border-radius: var(--radius); margin-bottom: 16px;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <i class="fas fa-video" style="color: var(--primary);"></i>
+              <div style="font-size: 0.9rem;">
+                <strong>标准视频：</strong>
+                <span id="detailStandardName">--</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <h4
+          style="margin: 20px 0 12px 0; padding-bottom: 8px; border-bottom: 2px solid var(--gray-100); font-size: 1rem;">
+          <i class="fas fa-list-check"></i> 详细评估
+        </h4>
+
+        <div class="detail-feedback-grid" id="detailFeedbackGrid">
+          <!-- 反馈详情动态生成 -->
+        </div>
+
+        <div class="improvement-suggestions" id="improvementSuggestions">
+          <!-- 改进建议动态生成 -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" id="mainContainer" style="display: none;">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+      <div class="nav-brand">
+        <i class="fas fa-heartbeat"></i>
+        <span class="logo-text">WellGo</span>
+        <span class="platform-text" style="font-size: 0.8rem; color: var(--gray-500);">智能舞蹈体操教学评估平台</span>
+      </div>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="nav-links" id="mobileNavLinks">
+        <a href="#" class="nav-link active">
+          <i class="fas fa-home"></i> 首页
+        </a>
+        <a href="LearningPage.html" class="nav-link">
+          <i class="fas fa-dumbbell"></i> 学习
+        </a>
+        <a href="progress.html" class="nav-link">
+          <i class="fas fa-chart-line"></i> 进度
+        </a>
+        <a href="#" class="nav-link">
+          <i class="fas fa-graduation-cap"></i> 课程
+        </a>
+      </div>
+
+      <div class="user-menu">
+        <div class="user-avatar" id="userAvatar">U</div>
+        <span id="userName" style="font-size: 0.9rem; display: none;">用户</span>
+        <button class="logout-btn" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i> 退出
+        </button>
+      </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main>
+      <!-- Hero区域 -->
+      <div class="hero">
+        <h1>智能舞蹈体操教学与评估系统</h1>
+        <p class="hero-subtitle">
+          聚焦全民健康，新一代舞蹈体操自动教学与评估平台
+          <br>上传标准视频与练习视频，获得专业AI评估反馈
+        </p>
+        <button class="btn btn-primary btn-large mobile-tap-effect" onclick="startEvaluation()">
+          <i class="fas fa-play-circle"></i> 开始动作评估
+        </button>
+
+        <div class="hero-features">
+          <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-robot"></i></div>
+            <span>AI智能评估</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-video"></i></div>
+            <span>动作比对分析</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+            <span>详细反馈报告</span>
+          </div>
+          <div class="feature-item">
+            <div class="feature-icon"><i class="fas fa-history"></i></div>
+            <span>学习进度追踪</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 状态消息 -->
+      <div class="status-message" id="statusMessage"></div>
+
+      <!-- 双上传区域 -->
+      <div class="upload-dual-section">
+        <!-- 标准视频上传 -->
+        <div class="upload-card standard">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-star"></i>
+            </div>
+            <div>
+              <h3 style="font-size: 1.1rem;">标准动作视频</h3>
+              <p style="color: var(--gray-500); font-size: 0.85rem;">上传教学示范视频</p>
+            </div>
+          </div>
+
+          <div class="upload-area no-context-menu" id="standardUploadArea">
+            <div class="upload-icon">
+              <i class="fas fa-video"></i>
+            </div>
+            <div class="upload-text">
+              <strong>点击或拖放标准视频</strong>
+            </div>
+            <div class="upload-hint">
+              支持 MP4, MOV, AVI 格式，最大 500MB
+            </div>
+            <input type="file" id="standardVideoInput" accept="video/*" capture="environment" style="display: none;">
+          </div>
+
+          <div id="standardPreview" style="display: none;">
+            <div style="margin-top: 12px; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <i class="fas fa-check-circle" style="color: var(--success);"></i>
+                <strong style="font-size: 0.95rem;">已选择标准视频</strong>
+              </div>
+              <div style="font-size: 0.85rem; color: var(--gray-600);">
+                <div>文件名：<span id="standardFileName"></span></div>
+                <div>大小：<span id="standardFileSize"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 练习视频上传 -->
+        <div class="upload-card practice">
+          <div class="card-header">
+            <div class="card-icon">
+              <i class="fas fa-user-check"></i>
+            </div>
+            <div>
+              <h3 style="font-size: 1.1rem;">练习动作视频</h3>
+              <p style="color: var(--gray-500); font-size: 0.85rem;">上传您的练习视频</p>
+            </div>
+          </div>
+
+          <div class="upload-area no-context-menu" id="practiceUploadArea">
+            <div class="upload-icon">
+              <i class="fas fa-running"></i>
+            </div>
+            <div class="upload-text">
+              <strong>点击或拖放练习视频</strong>
+            </div>
+            <div class="upload-hint">
+              支持 MP4, MOV, AVI 格式，最大 500MB
+            </div>
+            <input type="file" id="practiceVideoInput" accept="video/*" capture="user" style="display: none;">
+          </div>
+
+          <div id="practicePreview" style="display: none;">
+            <div style="margin-top: 12px; padding: 12px; background: var(--gray-50); border-radius: var(--radius);">
+              <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+                <i class="fas fa-check-circle" style="color: var(--primary);"></i>
+                <strong style="font-size: 0.95rem;">已选择练习视频</strong>
+              </div>
+              <div style="font-size: 0.85rem; color: var(--gray-600);">
+                <div>文件名：<span id="practiceFileName"></span></div>
+                <div>大小：<span id="practiceFileSize"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 开始评估按钮 -->
+      <div style="text-align: center; margin: 1.5rem 0;">
+        <button class="btn btn-success btn-large mobile-tap-effect" id="evaluateBtn" disabled
+          onclick="startEvaluation()">
+          <i class="fas fa-play-circle"></i> 开始AI评估
+        </button>
+        <p style="margin-top: 8px; color: var(--gray-500); font-size: 0.85rem;">
+          请先上传标准视频和练习视频
+        </p>
+      </div>
+
+      <!-- ==================== 实时动作纠正模块 ==================== -->
+      <div class="live-correction-section" id="liveCorrectionSection">
+        <div class="live-correction-header">
+          <h2 style="font-size: 1.2rem;"><i class="fas fa-video"></i> 实时动作纠正</h2>
+          <div>
+            <button class="btn btn-primary mobile-tap-effect" id="startLiveBtn" onclick="startLiveCorrection()">
+              <i class="fas fa-play"></i> 开始实时纠正
+            </button>
+            <button class="btn btn-danger mobile-tap-effect" id="stopLiveBtn" style="display: none;"
+              onclick="stopLiveCorrection()">
+              <i class="fas fa-stop"></i> 停止
+            </button>
+          </div>
+        </div>
+
+        <p style="color: var(--gray-500); margin-bottom: 16px; font-size: 0.9rem;">
+          使用摄像头实时捕捉您的动作，系统会即时分析并与标准动作对比，提供实时纠正反馈
+        </p>
+
+        <div class="live-correction-content">
+          <!-- 实时摄像头画面 -->
+          <div class="camera-container">
+            <video id="liveVideo" autoplay playsinline muted></video>
+            <div class="video-label">实时摄像头</div>
+            <svg class="pose-skeleton" id="poseSkeleton"></svg>
+            <div id="poseLandmarks"></div>
+            <button class="fullscreen-btn mobile-tap-effect" onclick="toggleFullscreen('liveVideo')">
+              <i class="fas fa-expand"></i>
+            </button>
+          </div>
+
+          <!-- 标准参考视频 -->
+          <div class="reference-video-container">
+            <video id="referenceVideo" controls playsinline></video>
+            <div class="video-label">标准动作参考</div>
+            <button class="fullscreen-btn mobile-tap-effect" onclick="toggleFullscreen('referenceVideo')">
+              <i class="fas fa-expand"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- 摄像头选择器 -->
+        <div class="camera-selector">
+          <label for="cameraSelect" style="font-size: 0.9rem;"><i class="fas fa-camera"></i> 选择摄像头设备：</label>
+          <select id="cameraSelect" class="camera-select" onchange="changeCamera()">
+            <option value="">加载摄像头设备...</option>
+          </select>
+        </div>
+
+        <!-- 控制按钮 -->
+        <div class="correction-controls">
+          <button class="btn btn-success mobile-tap-effect" id="captureBtn" onclick="capturePose()"
+            style="display: none;">
+            <i class="fas fa-camera"></i> 捕捉姿势
+          </button>
+          <button class="btn btn-warning mobile-tap-effect" id="recordBtn" onclick="toggleRecording()"
+            style="display: none;">
+            <i class="fas fa-circle"></i> 录制
+          </button>
+          <button class="btn btn-primary mobile-tap-effect" onclick="analyzeCurrentPose()" id="analyzeBtn"
+            style="display: none;">
+            <i class="fas fa-search"></i> 分析
+          </button>
+          <button class="btn mobile-tap-effect" onclick="resetCorrection()" id="resetBtn" style="display: none;">
+            <i class="fas fa-redo"></i> 重置
+          </button>
+        </div>
+
+        <!-- 实时指标 -->
+        <div class="correction-metrics" id="correctionMetrics" style="display: none;">
+          <div class="metric-card" id="accuracyMetric">
+            <div class="metric-label">动作准确度</div>
+            <div class="metric-value">0%</div>
+            <div class="metric-status status-poor">需要改进</div>
+          </div>
+          <div class="metric-card" id="timingMetric">
+            <div class="metric-label">节奏匹配</div>
+            <div class="metric-value">0%</div>
+            <div class="metric-status status-poor">需要改进</div>
+          </div>
+          <div class="metric-card" id="alignmentMetric">
+            <div class="metric-label">身体对齐</div>
+            <div class="metric-value">0%</div>
+            <div class="metric-status status-poor">需要改进</div>
+          </div>
+          <div class="metric-card" id="balanceMetric">
+            <div class="metric-label">平衡稳定性</div>
+            <div class="metric-value">0%</div>
+            <div class="metric-status status-poor">需要改进</div>
+          </div>
+        </div>
+
+        <!-- 进度条 -->
+        <div style="margin-top: 16px; display: none;" id="progressContainer">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 4px; font-size: 0.9rem;">
+            <span>动作完成度</span>
+            <span id="progressText">0%</span>
+          </div>
+          <div class="correction-progress">
+            <div class="progress-bar" id="progressBar"></div>
+          </div>
+        </div>
+
+        <!-- 实时反馈 -->
+        <div class="real-time-feedback scroll-optimized" id="realTimeFeedback" style="display: none;">
+          <h4 style="font-size: 1rem;"><i class="fas fa-comment-medical"></i> 实时纠正反馈</h4>
+          <div id="feedbackMessages">
+            <!-- 反馈消息会动态插入到这里 -->
+          </div>
+        </div>
+
+        <!-- 动作捕捉点状态 -->
+        <div style="margin-top: 16px; display: none;" id="keypointsStatus">
+          <h4 style="font-size: 1rem;"><i class="fas fa-crosshairs"></i> 身体关键点检测状态</h4>
+          <div class="capture-grid" id="keypointsGrid">
+            <!-- 关键点状态会动态生成 -->
+          </div>
+        </div>
+
+        <!-- 实时数据表格 -->
+        <div style="margin-top: 16px; overflow-x: auto; display: none;" id="dataTableContainer">
+          <table class="real-time-table">
+            <thead>
+              <tr>
+                <th>身体部位</th>
+                <th>当前角度</th>
+                <th>目标角度</th>
+                <th>偏差</th>
+                <th>状态</th>
+              </tr>
+            </thead>
+            <tbody id="poseDataBody">
+              <!-- 姿势数据会动态插入 -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 评估结果 -->
+      <div class="evaluation-section" id="evaluationResult">
+        <div class="evaluation-header">
+          <h2 style="font-size: 1.2rem;"><i class="fas fa-chart-bar"></i> 评估报告</h2>
+          <button class="btn mobile-tap-effect" onclick="saveEvaluation()">
+            <i class="fas fa-save"></i> 保存
+          </button>
+        </div>
+
+        <div class="score-display">
+          <div class="score-number" id="finalScore">85.5</div>
+          <div class="score-label">综合得分 / 100</div>
+        </div>
+
+        <div class="video-comparison">
+          <div class="video-wrapper">
+            <div class="video-label">标准动作</div>
+            <video id="standardVideoPlayer" controls playsinline
+              style="width: 100%; height: 100%; border-radius: var(--radius);"></video>
+          </div>
+          <div class="video-wrapper">
+            <div class="video-label">您的练习</div>
+            <video id="practiceVideoPlayer" controls playsinline
+              style="width: 100%; height: 100%; border-radius: var(--radius);"></video>
+          </div>
+        </div>
+
+        <h3 style="margin: 20px 0 12px 0; font-size: 1.1rem;">详细反馈</h3>
+        <div class="feedback-grid" id="feedbackGrid">
+          <!-- 反馈项将通过JS动态生成 -->
+        </div>
+      </div>
+
+      <!-- 学习历史 -->
+      <div class="history-section">
+        <h2 style="font-size: 1.2rem;"><i class="fas fa-history"></i> 学习历史</h2>
+        <p style="color: var(--gray-500); margin-bottom: 16px; font-size: 0.9rem;">查看您的练习记录和进步情况</p>
+
+        <div class="history-grid" id="historyGrid">
+          <!-- 历史记录将通过JS动态生成 -->
+        </div>
+      </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer>
+      <p>© 2024 WellGo - 智能舞蹈体操教学与评估系统 · 华东师范大学挑战杯项目</p>
+      <div class="footer-links">
+        <a href="#"><i class="fas fa-info-circle"></i> 关于项目</a>
+        <a href="#"><i class="fas fa-book"></i> 使用指南</a>
+        <a href="#"><i class="fas fa-envelope"></i> 联系我们</a>
+        <a href="#"><i class="fas fa-shield-alt"></i> 隐私政策</a>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // ==================== 用户系统 ====================
+    const DB_NAME = 'WellGoDB';
+    const DB_VERSION = 1;
+    const USER_STORE = 'users';
+    const EVAL_STORE = 'evaluations';
+
+    let currentUser = null;
+    let standardVideo = null;
+    let practiceVideo = null;
+    let evaluations = [];
+    let currentHistoryData = [];
+
+    // ==================== 实时纠正模块变量 ====================
+    let liveStream = null;
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let isRecording = false;
+    let isLiveMode = false;
+    let currentPose = null;
+    let referencePose = null;
+    let animationFrameId = null;
+    let lastAnalysisTime = 0;
+    let currentCameraDeviceId = null;
+    let isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    let isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+    // 姿势关键点连接定义
+    const POSE_CONNECTIONS = [
+      [0, 1], [0, 2], [1, 3], [2, 4], // 头部和肩膀
+      [5, 6], [5, 7], [5, 11], [6, 8], [6, 12], // 躯干
+      [7, 9], [8, 10], [11, 12], [11, 13], [12, 14], // 臀部和腿部
+      [13, 15], [14, 16] // 脚部
+    ];
+
+    const POSE_LANDMARKS = [
+      '鼻子', '左眼内', '左眼', '左耳', '右眼内',
+      '右眼', '右耳', '左肩', '右肩', '左肘',
+      '右肘', '左腕', '右腕', '左髋', '右髋',
+      '左膝', '右膝', '左踝', '右踝'
+    ];
+
+    // ==================== 数据库初始化 ====================
+    async function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains(USER_STORE)) {
+            db.createObjectStore(USER_STORE, { keyPath: 'email' });
+          }
+          if (!db.objectStoreNames.contains(EVAL_STORE)) {
+            const store = db.createObjectStore(EVAL_STORE, { keyPath: 'id', autoIncrement: true });
+            store.createIndex('userId', 'userId', { unique: false });
+          }
+        };
+      });
+    }
+
+    // ==================== 表单验证函数 ====================
+    function validateEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    function validateUsername(username) {
+      const usernameRegex = /^[\u4e00-\u9fa5a-zA-Z0-9_]{2,20}$/;
+      return usernameRegex.test(username);
+    }
+
+    function validatePassword(password) {
+      const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d).{6,}$/;
+      return passwordRegex.test(password);
+    }
+
+    function showFormError(fieldId, message) {
+      const field = document.getElementById(fieldId);
+      const errorElement = document.getElementById(`${fieldId}Error`);
+      const formGroup = field.closest('.form-group');
+
+      formGroup.classList.add('error');
+      errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+      errorElement.classList.add('show');
+
+      field.focus();
+    }
+
+    function clearFormErrors() {
+      document.querySelectorAll('.form-group').forEach(group => {
+        group.classList.remove('error');
+      });
+      document.querySelectorAll('.error-message').forEach(error => {
+        error.classList.remove('show');
+        error.innerHTML = '';
+      });
+    }
+
+    function validateRegisterForm() {
+      clearFormErrors();
+      let isValid = true;
+
+      const name = document.getElementById('regName').value.trim();
+      if (!name) {
+        showFormError('regName', '请输入用户名');
+        isValid = false;
+      } else if (!validateUsername(name)) {
+        showFormError('regName', '用户名应为2-20个字符（中文、英文、数字、下划线）');
+        isValid = false;
+      }
+
+      const email = document.getElementById('regEmail').value.trim();
+      if (!email) {
+        showFormError('regEmail', '请输入邮箱');
+        isValid = false;
+      } else if (!validateEmail(email)) {
+        showFormError('regEmail', '请输入有效的邮箱地址');
+        isValid = false;
+      }
+
+      const password = document.getElementById('regPassword').value.trim();
+      if (!password) {
+        showFormError('regPassword', '请输入密码');
+        isValid = false;
+      } else if (!validatePassword(password)) {
+        showFormError('regPassword', '密码至少6位，且包含字母和数字');
+        isValid = false;
+      }
+
+      const confirmPassword = document.getElementById('confirmPassword').value.trim();
+      if (!confirmPassword) {
+        showFormError('confirmPassword', '请再次输入密码');
+        isValid = false;
+      } else if (password !== confirmPassword) {
+        showFormError('confirmPassword', '两次输入的密码不一致');
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    function validateLoginForm() {
+      clearFormErrors();
+      let isValid = true;
+
+      const email = document.getElementById('loginEmail').value.trim();
+      if (!email) {
+        showFormError('loginEmail', '请输入邮箱');
+        isValid = false;
+      } else if (!validateEmail(email)) {
+        showFormError('loginEmail', '请输入有效的邮箱地址');
+        isValid = false;
+      }
+
+      const password = document.getElementById('loginPassword').value.trim();
+      if (!password) {
+        showFormError('loginPassword', '请输入密码');
+        isValid = false;
+      }
+
+      return isValid;
+    }
+
+    // ==================== 用户认证功能 ====================
+    function checkAuth() {
+      const savedUser = localStorage.getItem('wellgo_user');
+      if (savedUser) {
+        try {
+          currentUser = JSON.parse(savedUser);
+          showMainApp();
+        } catch (e) {
+          showAuthModal();
+        }
+      } else {
+        showAuthModal();
+      }
+    }
+
+    function showMainApp() {
+      document.getElementById('authModal').style.display = 'none';
+      document.getElementById('mainContainer').style.display = 'block';
+      document.getElementById('userName').textContent = currentUser.name;
+      document.getElementById('userAvatar').textContent = currentUser.name.charAt(0).toUpperCase();
+
+      // 移动端显示用户名
+      if (isMobileDevice) {
+        document.getElementById('userName').style.display = 'inline';
+        document.getElementById('userName').style.fontSize = '0.8rem';
+      }
+
+      loadUserHistory();
+    }
+
+    function showAuthModal() {
+      document.getElementById('authModal').style.display = 'flex';
+      document.getElementById('mainContainer').style.display = 'none';
+      clearFormErrors();
+
+      // 移动端优化：防止键盘弹出时界面变形
+      if (isMobileDevice) {
+        setTimeout(() => {
+          document.getElementById('loginEmail').focus();
+        }, 300);
+      }
+    }
+
+    function switchTab(tab) {
+      document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`.auth-tab[data-tab="${tab}"]`).classList.add('active');
+
+      document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+
+      clearFormErrors();
+
+      // 移动端优化：自动聚焦
+      if (isMobileDevice) {
+        setTimeout(() => {
+          if (tab === 'login') {
+            document.getElementById('loginEmail').focus();
+          } else {
+            document.getElementById('regName').focus();
+          }
+        }, 300);
+      }
+    }
+
+    async function register() {
+      if (!validateRegisterForm()) {
+        return;
+      }
+
+      const name = document.getElementById('regName').value.trim();
+      const email = document.getElementById('regEmail').value.trim();
+      const password = document.getElementById('regPassword').value.trim();
+      const userType = document.getElementById('userType').value;
+
+      showMessage('正在注册...', 'info');
+
+      try {
+        const db = await initDB();
+        const tx = db.transaction(USER_STORE, 'readwrite');
+        const store = tx.objectStore(USER_STORE);
+
+        const existingUser = await new Promise(resolve => {
+          const req = store.get(email);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        });
+
+        if (existingUser) {
+          showFormError('regEmail', '该邮箱已被注册');
+          db.close();
+          return;
+        }
+
+        const user = {
+          email,
+          name,
+          password,
+          userType,
+          createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString()
+        };
+
+        await new Promise((resolve, reject) => {
+          const req = store.add(user);
+          req.onsuccess = () => resolve();
+          req.onerror = () => reject(req.error);
+        });
+
+        db.close();
+
+        showMessage('注册成功！请登录', 'success');
+        switchTab('login');
+
+        document.getElementById('regName').value = '';
+        document.getElementById('regEmail').value = '';
+        document.getElementById('regPassword').value = '';
+        document.getElementById('confirmPassword').value = '';
+
+      } catch (error) {
+        console.error('注册失败:', error);
+        showMessage('注册失败，请稍后重试', 'error');
+      }
+    }
+
+    async function login() {
+      if (!validateLoginForm()) {
+        return;
+      }
+
+      const email = document.getElementById('loginEmail').value.trim();
+      const password = document.getElementById('loginPassword').value.trim();
+
+      showMessage('正在登录...', 'info');
+
+      try {
+        const db = await initDB();
+        const tx = db.transaction(USER_STORE, 'readonly');
+        const store = tx.objectStore(USER_STORE);
+
+        const user = await new Promise(resolve => {
+          const req = store.get(email);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve(null);
+        });
+
+        db.close();
+
+        if (!user) {
+          showFormError('loginEmail', '用户不存在');
+          return;
+        }
+
+        if (user.password !== password) {
+          showFormError('loginPassword', '密码错误');
+          return;
+        }
+
+        user.lastLogin = new Date().toISOString();
+        localStorage.setItem('wellgo_user', JSON.stringify(user));
+        currentUser = user;
+
+        showMessage('登录成功！', 'success');
+        setTimeout(showMainApp, 1000);
+      } catch (error) {
+        console.error('登录失败:', error);
+        showMessage('登录失败，请稍后重试', 'error');
+      }
+    }
+
+    function logout() {
+      if (confirm('确定要退出登录吗？')) {
+        localStorage.removeItem('wellgo_user');
+        currentUser = null;
+        showAuthModal();
+      }
+    }
+
+    // ==================== 移动端菜单切换 ====================
+    function toggleMobileMenu() {
+      const navLinks = document.getElementById('mobileNavLinks');
+      const menuBtn = document.getElementById('mobileMenuBtn');
+      const spans = menuBtn.querySelectorAll('span');
+
+      navLinks.classList.toggle('active');
+
+      if (navLinks.classList.contains('active')) {
+        spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+        spans[1].style.opacity = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+      } else {
+        spans[0].style.transform = 'none';
+        spans[1].style.opacity = '1';
+        spans[2].style.transform = 'none';
+      }
+    }
+
+    // ==================== 视频上传功能 - 移动端优化 ====================
+    function initUploadHandlers() {
+      const standardUploadArea = document.getElementById('standardUploadArea');
+      const standardInput = document.getElementById('standardVideoInput');
+
+      // 移动端触摸事件
+      standardUploadArea.addEventListener('touchstart', handleTouchStart, { passive: true });
+      standardUploadArea.addEventListener('touchend', handleTouchEnd, { passive: true });
+      standardUploadArea.addEventListener('click', () => standardInput.click());
+      standardUploadArea.addEventListener('dragover', handleDragOver);
+      standardUploadArea.addEventListener('dragleave', handleDragLeave);
+      standardUploadArea.addEventListener('drop', (e) => handleDrop(e, 'standard'));
+      standardInput.addEventListener('change', (e) => handleFileSelect(e, 'standard'));
+
+      const practiceUploadArea = document.getElementById('practiceUploadArea');
+      const practiceInput = document.getElementById('practiceVideoInput');
+
+      practiceUploadArea.addEventListener('touchstart', handleTouchStart, { passive: true });
+      practiceUploadArea.addEventListener('touchend', handleTouchEnd, { passive: true });
+      practiceUploadArea.addEventListener('click', () => practiceInput.click());
+      practiceUploadArea.addEventListener('dragover', handleDragOver);
+      practiceUploadArea.addEventListener('dragleave', handleDragLeave);
+      practiceUploadArea.addEventListener('drop', (e) => handleDrop(e, 'practice'));
+      practiceInput.addEventListener('change', (e) => handleFileSelect(e, 'practice'));
+
+      // 移动端优化：添加文件选择提示
+      if (isMobileDevice) {
+        const uploadAreas = document.querySelectorAll('.upload-area');
+        uploadAreas.forEach(area => {
+          const hint = area.querySelector('.upload-hint');
+          if (hint) {
+            hint.innerHTML += '<br>（移动端建议拍摄短视频）';
+          }
+        });
+      }
+    }
+
+    // 触摸事件处理
+    let touchStartTime;
+    function handleTouchStart(e) {
+      touchStartTime = Date.now();
+      e.currentTarget.classList.add('dragover');
+      e.preventDefault();
+    }
+
+    function handleTouchEnd(e) {
+      const touchDuration = Date.now() - touchStartTime;
+      if (touchDuration < 500) { // 短按
+        e.currentTarget.classList.remove('dragover');
+      }
+      e.preventDefault();
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.currentTarget.classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+      e.currentTarget.classList.remove('dragover');
+    }
+
+    function handleDrop(e, type) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file, type);
+    }
+
+    function handleFileSelect(e, type) {
+      const file = e.target.files[0];
+      if (file) handleFile(file, type);
+    }
+
+    function handleFile(file, type) {
+      if (!file.type.startsWith('video/')) {
+        showMessage('请选择视频文件！', 'error');
+        return;
+      }
+
+      // 移动端限制文件大小
+      const maxSize = isMobileDevice ? 100 * 1024 * 1024 : 500 * 1024 * 1024;
+      if (file.size > maxSize) {
+        showMessage(`文件太大！请上传小于 ${isMobileDevice ? '100MB' : '500MB'} 的视频。`, 'error');
+        return;
+      }
+
+      if (type === 'standard') {
+        standardVideo = file;
+        showFilePreview(file, type);
+      } else {
+        practiceVideo = file;
+        showFilePreview(file, type);
+      }
+
+      checkEvaluationReady();
+    }
+
+    function showFilePreview(file, type) {
+      const previewId = type + 'Preview';
+      const fileNameId = type + 'FileName';
+      const fileSizeId = type + 'FileSize';
+
+      document.getElementById(previewId).style.display = 'block';
+      document.getElementById(fileNameId).textContent = getShortFileName(file.name);
+      document.getElementById(fileSizeId).textContent = formatFileSize(file.size);
+    }
+
+    function getShortFileName(filename) {
+      if (filename.length > 25) {
+        return filename.substring(0, 22) + '...';
+      }
+      return filename;
+    }
+
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 B';
+      const k = 1024;
+      const sizes = ['B', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function checkEvaluationReady() {
+      const evaluateBtn = document.getElementById('evaluateBtn');
+      if (standardVideo && practiceVideo) {
+        evaluateBtn.disabled = false;
+        evaluateBtn.innerHTML = '<i class="fas fa-play-circle"></i> 开始AI评估';
+      } else {
+        evaluateBtn.disabled = true;
+      }
+    }
+
+    // ==================== AI评估功能 ====================
+    async function startEvaluation() {
+      if (!standardVideo || !practiceVideo) {
+        showMessage('请先上传标准视频和练习视频', 'error');
+        return;
+      }
+
+      if (!currentUser) {
+        showMessage('请先登录', 'error');
+        return;
+      }
+
+      showMessage('正在上传视频并进行分析...', 'info');
+
+      const formData = new FormData();
+      formData.append('standard_video', standardVideo);
+      formData.append('practice_video', practiceVideo);
+      formData.append('exercise_type', 'dance');
+
+      try {
+        console.log('开始上传文件...');
+        console.log('标准视频文件:', standardVideo.name, standardVideo.size);
+        console.log('练习视频文件:', practiceVideo.name, practiceVideo.size);
+
+        const uploadResponse = await fetch('http://127.0.0.1:5000/api/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        console.log('上传响应状态:', uploadResponse.status, uploadResponse.statusText);
+
+        if (!uploadResponse.ok) {
+          const errorText = await uploadResponse.text();
+          console.error('服务器响应错误:', errorText);
+          throw new Error(`HTTP ${uploadResponse.status}: ${uploadResponse.statusText}`);
+        }
+
+        let uploadResult;
+        try {
+          uploadResult = await uploadResponse.json();
+        } catch (jsonError) {
+          console.error('JSON解析失败:', jsonError);
+          const responseText = await uploadResponse.text();
+          console.error('原始响应:', responseText);
+          throw new Error('服务器返回了无效的JSON格式');
+        }
+
+        console.log('上传结果:', uploadResult);
+
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || '上传失败');
+        }
+
+        const sessionId = uploadResult.session_id;
+
+        showMessage('正在分析视频动作...', 'info');
+
+        const evaluateResponse = await fetch('http://127.0.0.1:5000/api/evaluate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            session_id: sessionId,
+            exercise_type: 'dance'
+          })
+        });
+
+        const evaluateResult = await evaluateResponse.json();
+
+        if (!evaluateResult.success) {
+          throw new Error(evaluateResult.error || '评估失败');
+        }
+
+        showEvaluationResult(evaluateResult);
+        saveEvaluationToHistory(evaluateResult);
+
+      } catch (error) {
+        console.error('上传过程中发生错误:', error);
+        console.error('错误堆栈:', error.stack);
+        showMessage(`上传失败: ${error.message}`, 'error');
+      }
+    }
+
+    function showEvaluationResult(result) {
+      const resultSection = document.getElementById('evaluationResult');
+      const finalScore = document.getElementById('finalScore');
+      const feedbackGrid = document.getElementById('feedbackGrid');
+
+      finalScore.textContent = result.overall_score.toFixed(1);
+
+      if (standardVideo) {
+        const standardPlayer = document.getElementById('standardVideoPlayer');
+        standardPlayer.src = URL.createObjectURL(standardVideo);
+      }
+
+      if (practiceVideo) {
+        const practicePlayer = document.getElementById('practiceVideoPlayer');
+        practicePlayer.src = URL.createObjectURL(practiceVideo);
+      }
+
+      const dimensions = result.dimension_scores;
+      feedbackGrid.innerHTML = '';
+
+      for (const [key, dimension] of Object.entries(dimensions)) {
+        let type = 'good';
+        if (dimension.score < 70) type = 'error';
+        else if (dimension.score < 80) type = 'warning';
+
+        feedbackGrid.innerHTML += `
+            <div class="feedback-item ${type}">
+                <div class="feedback-title">
+                    ${dimension.name}
+                    <span style="float: right; color: var(--gray-700); font-size: 0.9rem;">${dimension.score.toFixed(1)}/100</span>
+                </div>
+                <div class="feedback-content">${dimension.description}</div>
+            </div>
+        `;
+      }
+
+      if (result.detailed_feedback && result.detailed_feedback.length > 0) {
+        feedbackGrid.innerHTML += `
+            <div style="grid-column: 1/-1; margin-top: 16px;">
+                <h4 style="margin-bottom: 8px; color: var(--primary); font-size: 1rem;">
+                    <i class="fas fa-lightbulb"></i> 改进建议
+                </h4>
+        `;
+
+        result.detailed_feedback.forEach(suggestion => {
+          feedbackGrid.innerHTML += `
+                <div class="feedback-item ${suggestion.type}" style="margin-bottom: 8px;">
+                    <div class="feedback-title">${suggestion.title}</div>
+                    <div class="feedback-content">${suggestion.content}</div>
+                </div>
+            `;
+        });
+
+        feedbackGrid.innerHTML += `</div>`;
+      }
+
+      if (result.visualization_url) {
+        setTimeout(() => {
+          const img = document.createElement('img');
+          img.src = result.visualization_url;
+          img.style.width = '100%';
+          img.style.borderRadius = 'var(--radius)';
+          img.style.marginTop = '16px';
+          resultSection.appendChild(img);
+        }, 100);
+      }
+
+      resultSection.style.display = 'block';
+      resultSection.scrollIntoView({ behavior: 'smooth' });
+      showMessage('评估完成！', 'success');
+    }
+
+    // ==================== 历史记录功能 ====================
+    async function saveEvaluationToHistory(result) {
+      if (!currentUser) return;
+
+      const evaluation = {
+        userId: currentUser.email,
+        standardVideoName: standardVideo ? standardVideo.name : '标准视频',
+        practiceVideoName: practiceVideo ? practiceVideo.name : '练习视频',
+        score: result.overall_score,
+        feedback: result.detailed_feedback,
+        date: new Date().toLocaleDateString('zh-CN'),
+        time: new Date().toLocaleTimeString('zh-CN'),
+        createdAt: new Date().toISOString(),
+        sessionData: result
+      };
+
+      try {
+        const db = await initDB();
+        const tx = db.transaction(EVAL_STORE, 'readwrite');
+        const store = tx.objectStore(EVAL_STORE);
+
+        await new Promise((resolve, reject) => {
+          const req = store.add(evaluation);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+
+        db.close();
+
+        loadUserHistory();
+      } catch (error) {
+        console.error('保存评估记录失败:', error);
+      }
+    }
+
+    async function loadUserHistory() {
+      if (!currentUser) return;
+
+      try {
+        const db = await initDB();
+        const tx = db.transaction(EVAL_STORE, 'readonly');
+        const store = tx.objectStore(EVAL_STORE);
+        const index = store.index('userId');
+
+        const userEvaluations = await new Promise(resolve => {
+          const req = index.getAll(currentUser.email);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => resolve([]);
+        });
+
+        db.close();
+
+        currentHistoryData = userEvaluations.reverse().slice(0, 6);
+        displayHistory(currentHistoryData);
+      } catch (error) {
+        console.error('加载历史记录失败:', error);
+        showMessage('历史记录加载失败', 'error');
+      }
+    }
+
+    function displayHistory(evaluations) {
+      const historyGrid = document.getElementById('historyGrid');
+
+      if (evaluations.length === 0) {
+        historyGrid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align: center; padding: 30px; color: var(--gray-400);">
+            <i class="fas fa-history fa-2x" style="margin-bottom: 12px;"></i>
+            <p style="font-size: 0.9rem;">暂无评估记录</p>
+            <p style="font-size: 0.8rem; margin-top: 8px;">开始您的第一次动作评估吧！</p>
+          </div>
+        `;
+        return;
+      }
+
+      historyGrid.innerHTML = evaluations.map((eval, index) => `
+        <div class="history-card" onclick="showHistoryDetail(${index})">
+          <div class="history-score">
+            <div class="score-circle ${getScoreClass(eval.score)}">${eval.score.toFixed(0)}</div>
+            <div>
+              <div style="font-weight: 600; font-size: 0.9rem;">${getShortName(eval.practiceVideoName)}</div>
+              <div style="font-size: 0.8rem; color: var(--gray-500); margin-top: 4px;">
+                ${eval.date} ${eval.time}
+              </div>
+            </div>
+          </div>
+          <div style="font-size: 0.85rem; color: var(--gray-600); margin-top: 8px;">
+            对比：${getShortName(eval.standardVideoName)}
+          </div>
+          <div style="margin-top: 12px; font-size: 0.8rem; color: var(--gray-600);">
+            <i class="fas fa-exclamation-triangle" style="color: var(--warning); margin-right: 4px; font-size: 0.75rem;"></i>
+            ${getTopFeedback(eval.feedback)}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function getShortName(filename) {
+      if (filename.length > 20) {
+        return filename.substring(0, 17) + '...';
+      }
+      return filename;
+    }
+
+    function getScoreClass(score) {
+      if (score >= 90) return 'score-excellent';
+      if (score >= 80) return 'score-good';
+      if (score >= 70) return 'score-fair';
+      return 'score-poor';
+    }
+
+    function getTopFeedback(feedback) {
+      if (!feedback || !Array.isArray(feedback)) return '暂无反馈';
+      const worst = feedback.reduce((prev, curr) => prev.score < curr.score ? prev : curr);
+      return `需改进：${worst.title}`;
+    }
+
+    function saveEvaluation() {
+      showMessage('评估报告已保存到学习历史', 'success');
+    }
+
+    // ==================== 历史详情功能 ====================
+    function showHistoryDetail(index) {
+      if (!currentHistoryData[index]) {
+        showMessage('历史数据加载失败', 'error');
+        return;
+      }
+
+      const history = currentHistoryData[index];
+
+      document.getElementById('detailPracticeName').textContent = history.practiceVideoName;
+      document.getElementById('detailStandardName').textContent = history.standardVideoName;
+      document.getElementById('detailDateTime').textContent = `${history.date} ${history.time}`;
+      document.getElementById('detailScore').textContent = history.score.toFixed(1);
+
+      const feedbackGrid = document.getElementById('detailFeedbackGrid');
+      if (history.feedback && Array.isArray(history.feedback)) {
+        feedbackGrid.innerHTML = history.feedback.map(item => `
+          <div class="detail-feedback-item ${item.type}">
+            <div class="feedback-title">
+              ${item.title}
+              <span style="float: right; font-weight: 700; color: var(--gray-800); font-size: 0.9rem;">
+                ${item.score}/100
+              </span>
+            </div>
+            <div class="feedback-content" style="margin-top: 6px; font-size: 0.85rem;">
+              ${item.content}
+            </div>
+          </div>
+        `).join('');
+      } else {
+        feedbackGrid.innerHTML = `
+          <div style="text-align: center; padding: 30px; color: var(--gray-500); grid-column: 1/-1;">
+            <i class="fas fa-info-circle fa-1x" style="margin-bottom: 8px;"></i>
+            <p style="font-size: 0.9rem;">暂无详细反馈数据</p>
+          </div>
+        `;
+      }
+
+      const suggestionsDiv = document.getElementById('improvementSuggestions');
+      suggestionsDiv.innerHTML = generateSuggestions(history);
+
+      document.getElementById('historyDetailModal').style.display = 'flex';
+    }
+
+    function generateSuggestions(history) {
+      if (!history.feedback || !Array.isArray(history.feedback)) {
+        return '<h4><i class="fas fa-info-circle"></i> 无建议</h4><p style="font-size: 0.9rem;">暂无改进建议数据</p>';
+      }
+
+      const needsImprovement = history.feedback
+        .filter(item => item.score < 80)
+        .sort((a, b) => a.score - b.score);
+
+      if (needsImprovement.length === 0) {
+        return `
+          <h4><i class="fas fa-award"></i> 优秀表现</h4>
+          <p style="font-size: 0.9rem;">所有评估项都表现良好，继续保持！</p>
+        `;
+      }
+
+      const suggestions = needsImprovement.slice(0, 3).map(item => {
+        let suggestion = '';
+        switch (item.title) {
+          case '动作规范性':
+            suggestion = '观看标准视频，模仿示范动作的每个细节';
+            break;
+          case '节奏匹配度':
+            suggestion = '练习时使用节拍器，注意音乐节奏的准确性';
+            break;
+          case '力量控制':
+            suggestion = '加强核心力量训练，保持动作的稳定性';
+            break;
+          case '动作流畅性':
+            suggestion = '练习动作间的转换，减少停顿和卡顿';
+            break;
+          case '动作幅度':
+            suggestion = '适当加大动作幅度，保持舒展性';
+            break;
+          default:
+            suggestion = '参考标准视频，反复练习该动作环节';
+        }
+        return `<li class="suggestion-item"><strong>${item.title} (${item.score}/100)：</strong>${suggestion}</li>`;
+      }).join('');
+
+      return `
+        <h4><i class="fas fa-lightbulb"></i> 改进建议</h4>
+        <ul class="suggestion-list">
+          ${suggestions}
+        </ul>
+      `;
+    }
+
+    function closeHistoryDetail() {
+      document.getElementById('historyDetailModal').style.display = 'none';
+    }
+
+    // ==================== 实时纠正功能 - 移动端优化 ====================
+    async function startLiveCorrection() {
+      if (!currentUser) {
+        showMessage('请先登录', 'error');
+        return;
+      }
+
+      try {
+        showMessage('正在启动摄像头...', 'info');
+
+        // 移动端摄像头权限请求
+        if (isMobileDevice) {
+          // 在移动端，先检查摄像头权限
+          try {
+            const permissionStatus = await navigator.permissions.query({ name: 'camera' });
+            if (permissionStatus.state === 'denied') {
+              showMessage('摄像头访问被拒绝，请在设置中允许摄像头权限', 'error');
+              return;
+            }
+          } catch (e) {
+            console.log('权限查询API不支持');
+          }
+        }
+
+        // 移动端优化：使用适合移动设备的摄像头设置
+        const constraints = {
+          video: {
+            width: { ideal: isMobileDevice ? 480 : 640 },
+            height: { ideal: isMobileDevice ? 640 : 480 },
+            facingMode: 'user',
+            frameRate: { ideal: isMobileDevice ? 24 : 30 }
+          },
+          audio: false
+        };
+
+        // 移动端优化：横屏模式调整
+        if (isMobileDevice && window.innerHeight < window.innerWidth) {
+          constraints.video.width = { ideal: 640 };
+          constraints.video.height = { ideal: 480 };
+        }
+
+        if (currentCameraDeviceId) {
+          constraints.video.deviceId = { exact: currentCameraDeviceId };
+        }
+
+        // 移动端特定优化：iOS需要特殊处理
+        if (isIOS) {
+          constraints.video = {
+            facingMode: 'user',
+            width: { min: 480, ideal: 640, max: 1280 },
+            height: { min: 640, ideal: 480, max: 720 }
+          };
+        }
+
+        liveStream = await navigator.mediaDevices.getUserMedia(constraints);
+
+        const liveVideo = document.getElementById('liveVideo');
+        liveVideo.srcObject = liveStream;
+
+        // 移动端优化：确保视频播放
+        liveVideo.play().catch(e => {
+          console.log('视频自动播放被阻止:', e);
+          showMessage('请点击视频区域开始播放', 'info');
+        });
+
+        document.getElementById('startLiveBtn').style.display = 'none';
+        document.getElementById('stopLiveBtn').style.display = 'inline-block';
+        document.getElementById('captureBtn').style.display = 'inline-block';
+        document.getElementById('recordBtn').style.display = 'inline-block';
+        document.getElementById('analyzeBtn').style.display = 'inline-block';
+        document.getElementById('resetBtn').style.display = 'inline-block';
+
+        document.getElementById('correctionMetrics').style.display = 'grid';
+        document.getElementById('progressContainer').style.display = 'block';
+        document.getElementById('realTimeFeedback').style.display = 'block';
+        document.getElementById('keypointsStatus').style.display = 'block';
+        document.getElementById('dataTableContainer').style.display = 'block';
+
+        // 移动端优化：调整性能
+        if (isMobileDevice) {
+          // 移动端减少检测频率以节省电量
+          lastAnalysisTime = Date.now() - 200;
+        }
+
+        initPoseDetection();
+
+        if (standardVideo) {
+          const referenceVideo = document.getElementById('referenceVideo');
+          referenceVideo.src = URL.createObjectURL(standardVideo);
+        }
+
+        isLiveMode = true;
+        startRealTimeAnalysis();
+
+        showMessage('摄像头已启动，开始实时动作分析', 'success');
+
+        updateCameraList();
+
+        // 移动端优化：添加摄像头方向提示
+        if (isMobileDevice) {
+          setTimeout(() => {
+            showMessage('建议将手机竖屏放置以获得最佳检测效果', 'info', 3000);
+          }, 2000);
+        }
+
+      } catch (error) {
+        console.error('启动摄像头失败:', error);
+        let errorMessage = `无法访问摄像头: ${error.message}`;
+
+        // 移动端特定错误处理
+        if (isMobileDevice) {
+          if (error.name === 'NotAllowedError') {
+            errorMessage = '摄像头访问被拒绝，请在浏览器设置中允许摄像头权限';
+          } else if (error.name === 'NotFoundError') {
+            errorMessage = '未找到摄像头设备';
+          } else if (error.name === 'NotReadableError') {
+            errorMessage = '摄像头正在被其他应用使用';
+          }
+        }
+
+        showMessage(errorMessage, 'error');
+      }
+    }
+
+    function stopLiveCorrection() {
+      isLiveMode = false;
+
+      if (liveStream) {
+        liveStream.getTracks().forEach(track => track.stop());
+        liveStream = null;
+      }
+
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+        animationFrameId = null;
+      }
+
+      if (isRecording) {
+        stopRecording();
+      }
+
+      document.getElementById('startLiveBtn').style.display = 'inline-block';
+      document.getElementById('stopLiveBtn').style.display = 'none';
+      document.getElementById('captureBtn').style.display = 'none';
+      document.getElementById('recordBtn').style.display = 'none';
+      document.getElementById('analyzeBtn').style.display = 'none';
+      document.getElementById('resetBtn').style.display = 'none';
+
+      const liveVideo = document.getElementById('liveVideo');
+      liveVideo.srcObject = null;
+
+      showMessage('实时纠正已停止', 'info');
+    }
+
+    async function initPoseDetection() {
+      initKeypointsGrid();
+      startRealTimeAnalysis();
+    }
+
+    function startRealTimeAnalysis() {
+      if (!isLiveMode) return;
+
+      // 移动端优化：根据设备性能调整检测频率
+      const detectionInterval = isMobileDevice ? 150 : 100;
+
+      function analyzeFrame() {
+        if (!isLiveMode) return;
+
+        const now = Date.now();
+        if (now - lastAnalysisTime > detectionInterval) {
+          detectPose();
+          lastAnalysisTime = now;
+        }
+
+        animationFrameId = requestAnimationFrame(analyzeFrame);
+      }
+
+      animationFrameId = requestAnimationFrame(analyzeFrame);
+    }
+
+    function detectPose() {
+      const simulatedPose = simulatePoseDetection();
+      currentPose = simulatedPose;
+
+      drawPoseSkeleton(simulatedPose);
+      updateKeypointsStatus(simulatedPose);
+
+      if (referencePose) {
+        const comparison = comparePoses(currentPose, referencePose);
+        updateRealTimeMetrics(comparison);
+        provideRealTimeFeedback(comparison);
+        updatePoseDataTable(comparison);
+      }
+    }
+
+    function simulatePoseDetection() {
+      const video = document.getElementById('liveVideo');
+      const width = video.videoWidth || 640;
+      const height = video.videoHeight || 480;
+
+      const pose = [];
+      for (let i = 0; i < 17; i++) {
+        let x, y, confidence;
+
+        if (i === 0) {
+          x = width / 2 + (Math.random() - 0.5) * 20;
+          y = height / 4 + (Math.random() - 0.5) * 20;
+          confidence = 0.9 + Math.random() * 0.1;
+        } else if (i === 5 || i === 6) {
+          x = width / 2 + (i === 5 ? -100 : 100) + (Math.random() - 0.5) * 30;
+          y = height / 3 + (Math.random() - 0.5) * 20;
+          confidence = 0.8 + Math.random() * 0.2;
+        } else if (i === 7 || i === 8) {
+          x = width / 2 + (i === 7 ? -150 : 150) + (Math.random() - 0.5) * 40;
+          y = height / 2 + (Math.random() - 0.5) * 30;
+          confidence = 0.7 + Math.random() * 0.3;
+        } else if (i === 9 || i === 10) {
+          x = width / 2 + (i === 9 ? -180 : 180) + (Math.random() - 0.5) * 50;
+          y = height / 1.8 + (Math.random() - 0.5) * 40;
+          confidence = 0.6 + Math.random() * 0.4;
+        } else if (i === 11 || i === 12) {
+          x = width / 2 + (i === 11 ? -80 : 80) + (Math.random() - 0.5) * 25;
+          y = height / 1.5 + (Math.random() - 0.5) * 20;
+          confidence = 0.85 + Math.random() * 0.15;
+        } else if (i === 13 || i === 14) {
+          x = width / 2 + (i === 13 ? -90 : 90) + (Math.random() - 0.5) * 35;
+          y = height / 1.2 + (Math.random() - 0.5) * 25;
+          confidence = 0.75 + Math.random() * 0.25;
+        } else if (i === 15 || i === 16) {
+          x = width / 2 + (i === 15 ? -100 : 100) + (Math.random() - 0.5) * 40;
+          y = height / 1.1 + (Math.random() - 0.5) * 20;
+          confidence = 0.65 + Math.random() * 0.35;
+        } else {
+          x = width / 2 + (Math.random() - 0.5) * 200;
+          y = height / 2 + (Math.random() - 0.5) * 200;
+          confidence = 0.5 + Math.random() * 0.5;
+        }
+
+        x = Math.max(10, Math.min(width - 10, x));
+        y = Math.max(10, Math.min(height - 10, y));
+
+        pose.push({
+          x: x / width,
+          y: y / height,
+          confidence: confidence
+        });
+      }
+
+      return pose;
+    }
+
+    function drawPoseSkeleton(pose) {
+      const svg = document.getElementById('poseSkeleton');
+      const video = document.getElementById('liveVideo');
+
+      if (!svg || !video) return;
+
+      const width = video.clientWidth;
+      const height = video.clientHeight;
+
+      svg.innerHTML = '';
+      svg.setAttribute('width', width);
+      svg.setAttribute('height', height);
+
+      POSE_CONNECTIONS.forEach(connection => {
+        const [start, end] = connection;
+        if (pose[start] && pose[end] && pose[start].confidence > 0.3 && pose[end].confidence > 0.3) {
+          const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+          line.setAttribute('x1', pose[start].x * width);
+          line.setAttribute('y1', pose[start].y * height);
+          line.setAttribute('x2', pose[end].x * width);
+          line.setAttribute('y2', pose[end].y * height);
+          line.setAttribute('class', 'skeleton-line');
+          line.setAttribute('stroke-width', isMobileDevice ? '2' : '3');
+
+          const avgConfidence = (pose[start].confidence + pose[end].confidence) / 2;
+          line.setAttribute('stroke-opacity', avgConfidence);
+
+          svg.appendChild(line);
+        }
+      });
+
+      const landmarksContainer = document.getElementById('poseLandmarks');
+      landmarksContainer.innerHTML = '';
+
+      pose.forEach((point, index) => {
+        if (point.confidence > 0.3) {
+          const landmark = document.createElement('div');
+          landmark.className = 'pose-landmark pulse';
+          landmark.style.left = `${point.x * width}px`;
+          landmark.style.top = `${point.y * height}px`;
+
+          const size = isMobileDevice ? 6 + point.confidence * 6 : 8 + point.confidence * 8;
+          landmark.style.width = `${size}px`;
+          landmark.style.height = `${size}px`;
+
+          const r = Math.floor(255 * (1 - point.confidence));
+          const g = Math.floor(255 * point.confidence);
+          landmark.style.background = `rgb(${r}, ${g}, 0)`;
+          landmark.style.boxShadow = `0 0 ${isMobileDevice ? '6px' : '8px'} rgba(${r}, ${g}, 0, 0.8)`;
+
+          landmarksContainer.appendChild(landmark);
+
+          // 移动端减少标签显示以提升性能
+          if (!isMobileDevice && index < POSE_LANDMARKS.length) {
+            const label = document.createElement('div');
+            label.className = 'landmark-label';
+            label.textContent = `${POSE_LANDMARKS[index]}: ${Math.round(point.confidence * 100)}%`;
+            label.style.left = `${point.x * width}px`;
+            label.style.top = `${point.y * height - 15}px`;
+            landmarksContainer.appendChild(label);
+          }
+        }
+      });
+    }
+
+    function initKeypointsGrid() {
+      const grid = document.getElementById('keypointsGrid');
+      grid.innerHTML = '';
+
+      POSE_LANDMARKS.forEach((landmark, index) => {
+        const cell = document.createElement('div');
+        cell.className = 'capture-cell';
+        cell.id = `keypoint-${index}`;
+        cell.innerHTML = `
+          <div style="font-size: 0.65rem;">${landmark}</div>
+          <div class="keypoint-indicator keypoint-missing"></div>
+        `;
+        grid.appendChild(cell);
+      });
+    }
+
+    function updateKeypointsStatus(pose) {
+      pose.forEach((point, index) => {
+        if (index < POSE_LANDMARKS.length) {
+          const cell = document.getElementById(`keypoint-${index}`);
+          if (cell) {
+            const indicator = cell.querySelector('.keypoint-indicator');
+            if (point.confidence > 0.5) {
+              indicator.className = 'keypoint-indicator keypoint-detected';
+              cell.classList.add('active');
+            } else {
+              indicator.className = 'keypoint-indicator keypoint-missing';
+              cell.classList.remove('active');
+            }
+
+            const confidenceText = cell.querySelector('.confidence-text');
+            if (!confidenceText) {
+              const text = document.createElement('div');
+              text.className = 'confidence-text';
+              text.style.fontSize = '0.55rem';
+              text.style.marginTop = '2px';
+              cell.appendChild(text);
+            }
+            cell.querySelector('.confidence-text').textContent =
+              `${Math.round(point.confidence * 100)}%`;
+          }
+        }
+      });
+    }
+
+    function comparePoses(currentPose, referencePose) {
+      const comparison = {
+        accuracy: 0,
+        timing: 0,
+        alignment: 0,
+        balance: 0,
+        jointAngles: {},
+        deviations: {},
+        overallScore: 0
+      };
+
+      if (currentPose && referencePose) {
+        let totalConfidence = 0;
+        let totalDistance = 0;
+        let validPoints = 0;
+
+        for (let i = 0; i < Math.min(currentPose.length, referencePose.length); i++) {
+          if (currentPose[i].confidence > 0.3 && referencePose[i].confidence > 0.3) {
+            const dx = currentPose[i].x - referencePose[i].x;
+            const dy = currentPose[i].y - referencePose[i].y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            totalDistance += distance;
+            totalConfidence += currentPose[i].confidence;
+            validPoints++;
+
+            comparison.deviations[i] = {
+              distance: distance,
+              xDiff: dx,
+              yDiff: dy,
+              confidence: currentPose[i].confidence
+            };
+          }
+        }
+
+        if (validPoints > 0) {
+          const avgDistance = totalDistance / validPoints;
+          const avgConfidence = totalConfidence / validPoints;
+
+          comparison.accuracy = Math.max(0, 100 - (avgDistance * 200));
+          comparison.accuracy = Math.min(100, comparison.accuracy * avgConfidence);
+
+          comparison.alignment = calculateAlignmentScore(currentPose, referencePose);
+          comparison.balance = calculateBalanceScore(currentPose);
+          comparison.jointAngles = calculateJointAngles(currentPose);
+
+          comparison.overallScore = (
+            comparison.accuracy * 0.4 +
+            comparison.alignment * 0.3 +
+            comparison.balance * 0.3
+          );
+        }
+      }
+
+      return comparison;
+    }
+
+    function calculateAlignmentScore(currentPose, referencePose) {
+      const torsoIndices = [5, 6, 11, 12];
+      let totalScore = 0;
+      let count = 0;
+
+      torsoIndices.forEach(index => {
+        if (currentPose[index] && referencePose[index] &&
+          currentPose[index].confidence > 0.3 && referencePose[index].confidence > 0.3) {
+          const dx = Math.abs(currentPose[index].x - referencePose[index].x);
+          const dy = Math.abs(currentPose[index].y - referencePose[index].y);
+          const distance = Math.sqrt(dx * dx + dy * dy);
+
+          const score = Math.max(0, 100 - distance * 300);
+          totalScore += score;
+          count++;
+        }
+      });
+
+      return count > 0 ? totalScore / count : 0;
+    }
+
+    function calculateBalanceScore(pose) {
+      const leftRightPairs = [
+        [5, 6],
+        [11, 12],
+        [13, 14],
+        [15, 16]
+      ];
+
+      let totalScore = 0;
+      let count = 0;
+
+      leftRightPairs.forEach(pair => {
+        const [left, right] = pair;
+        if (pose[left] && pose[right] &&
+          pose[left].confidence > 0.3 && pose[right].confidence > 0.3) {
+          const heightDiff = Math.abs(pose[left].y - pose[right].y);
+          const score = Math.max(0, 100 - heightDiff * 500);
+          totalScore += score;
+          count++;
+        }
+      });
+
+      return count > 0 ? totalScore / count : 0;
+    }
+
+    function calculateJointAngles(pose) {
+      const angles = {};
+
+      if (pose[5] && pose[7] && pose[9]) {
+        angles.leftElbow = calculateAngle(pose[5], pose[7], pose[9]);
+      }
+
+      if (pose[6] && pose[8] && pose[10]) {
+        angles.rightElbow = calculateAngle(pose[6], pose[8], pose[10]);
+      }
+
+      if (pose[11] && pose[13] && pose[15]) {
+        angles.leftKnee = calculateAngle(pose[11], pose[13], pose[15]);
+      }
+
+      if (pose[12] && pose[14] && pose[16]) {
+        angles.rightKnee = calculateAngle(pose[12], pose[14], pose[16]);
+      }
+
+      return angles;
+    }
+
+    function calculateAngle(a, b, c) {
+      const ab = { x: b.x - a.x, y: b.y - a.y };
+      const cb = { x: b.x - c.x, y: b.y - c.y };
+
+      const dot = ab.x * cb.x + ab.y * cb.y;
+      const magAB = Math.sqrt(ab.x * ab.x + ab.y * ab.y);
+      const magCB = Math.sqrt(cb.x * cb.x + cb.y * cb.y);
+
+      const angle = Math.acos(dot / (magAB * magCB));
+      return angle * (180 / Math.PI);
+    }
+
+    function updateRealTimeMetrics(comparison) {
+      const accuracyMetric = document.getElementById('accuracyMetric');
+      accuracyMetric.querySelector('.metric-value').textContent =
+        `${comparison.accuracy.toFixed(1)}%`;
+      updateMetricStatus(accuracyMetric, comparison.accuracy);
+
+      const alignmentMetric = document.getElementById('alignmentMetric');
+      alignmentMetric.querySelector('.metric-value').textContent =
+        `${comparison.alignment.toFixed(1)}%`;
+      updateMetricStatus(alignmentMetric, comparison.alignment);
+
+      const balanceMetric = document.getElementById('balanceMetric');
+      balanceMetric.querySelector('.metric-value').textContent =
+        `${comparison.balance.toFixed(1)}%`;
+      updateMetricStatus(balanceMetric, comparison.balance);
+
+      const timingMetric = document.getElementById('timingMetric');
+      const timingScore = 70 + Math.random() * 20;
+      timingMetric.querySelector('.metric-value').textContent =
+        `${timingScore.toFixed(1)}%`;
+      updateMetricStatus(timingMetric, timingScore);
+
+      const progressBar = document.getElementById('progressBar');
+      const progressText = document.getElementById('progressText');
+      const progress = comparison.overallScore;
+      progressBar.style.width = `${progress}%`;
+      progressText.textContent = `${progress.toFixed(1)}%`;
+
+      if (progress > 80) {
+        progressBar.style.background = 'linear-gradient(90deg, var(--success), #22c55e)';
+      } else if (progress > 60) {
+        progressBar.style.background = 'linear-gradient(90deg, var(--warning), #f59e0b)';
+      } else {
+        progressBar.style.background = 'linear-gradient(90deg, var(--danger), #ef4444)';
+      }
+    }
+
+    function updateMetricStatus(metricElement, score) {
+      const statusElement = metricElement.querySelector('.metric-status');
+      metricElement.classList.remove('active');
+
+      if (score >= 80) {
+        statusElement.textContent = '优秀';
+        statusElement.className = 'metric-status status-good';
+        metricElement.classList.add('active');
+      } else if (score >= 60) {
+        statusElement.textContent = '良好';
+        statusElement.className = 'metric-status status-warning';
+      } else {
+        statusElement.textContent = '需要改进';
+        statusElement.className = 'metric-status status-poor';
+      }
+    }
+
+    function provideRealTimeFeedback(comparison) {
+      const feedbackContainer = document.getElementById('feedbackMessages');
+
+      const currentFeedbacks = feedbackContainer.children;
+      if (currentFeedbacks.length >= 3) {
+        feedbackContainer.removeChild(currentFeedbacks[0]);
+      }
+
+      const feedback = generateFeedbackMessage(comparison);
+      const feedbackElement = document.createElement('div');
+      feedbackElement.className = `feedback-message ${feedback.type}`;
+      feedbackElement.innerHTML = `
+        <div class="feedback-icon">
+          <i class="fas ${feedback.icon}"></i>
+        </div>
+        <div class="feedback-content">
+          <div class="feedback-title">${feedback.title}</div>
+          <div class="feedback-text">${feedback.message}</div>
+        </div>
+      `;
+
+      feedbackContainer.appendChild(feedbackElement);
+      feedbackContainer.scrollTop = feedbackContainer.scrollHeight;
+    }
+
+    function generateFeedbackMessage(comparison) {
+      const feedbacks = [];
+
+      if (comparison.accuracy < 60) {
+        feedbacks.push({
+          type: 'error',
+          icon: 'fa-exclamation-triangle',
+          title: '动作准确性低',
+          message: '请仔细观察标准动作，模仿细节'
+        });
+      } else if (comparison.accuracy < 80) {
+        feedbacks.push({
+          type: 'warning',
+          icon: 'fa-exclamation-circle',
+          title: '动作基本准确',
+          message: '继续努力，注意动作的细微差别'
+        });
+      } else {
+        feedbacks.push({
+          type: 'good',
+          icon: 'fa-check-circle',
+          title: '动作准确',
+          message: '很好！继续保持这个姿势'
+        });
+      }
+
+      if (comparison.balance < 60) {
+        feedbacks.push({
+          type: 'error',
+          icon: 'fa-balance-scale',
+          title: '身体不平衡',
+          message: '注意身体重心，保持左右对称'
+        });
+      }
+
+      if (comparison.alignment < 70) {
+        feedbacks.push({
+          type: 'warning',
+          icon: 'fa-arrows-alt-h',
+          title: '身体对齐需改进',
+          message: '调整姿势，保持躯干直立'
+        });
+      }
+
+      return feedbacks[Math.floor(Math.random() * feedbacks.length)] || {
+        type: 'good',
+        icon: 'fa-thumbs-up',
+        title: '动作良好',
+        message: '继续保持当前姿势'
+      };
+    }
+
+    function updatePoseDataTable(comparison) {
+      const tbody = document.getElementById('poseDataBody');
+      tbody.innerHTML = '';
+
+      const jointData = [
+        { name: '左肘', current: comparison.jointAngles.leftElbow, target: 90, unit: '°' },
+        { name: '右肘', current: comparison.jointAngles.rightElbow, target: 90, unit: '°' },
+        { name: '左膝', current: comparison.jointAngles.leftKnee, target: 120, unit: '°' },
+        { name: '右膝', current: comparison.jointAngles.rightKnee, target: 120, unit: '°' },
+        { name: '躯干角度', current: 85 + Math.random() * 10, target: 90, unit: '°' },
+        { name: '头部倾斜', current: Math.random() * 5, target: 0, unit: '°' }
+      ];
+
+      jointData.forEach(joint => {
+        if (joint.current !== undefined) {
+          const deviation = Math.abs(joint.current - joint.target);
+          const status = deviation < 15 ? '良好' : deviation < 30 ? '一般' : '需调整';
+
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${joint.name}</td>
+            <td>${joint.current.toFixed(1)}${joint.unit}</td>
+            <td>${joint.target}${joint.unit}</td>
+            <td>${deviation.toFixed(1)}${joint.unit}</td>
+            <td><span class="${getStatusClass(status)}">${status}</span></td>
+          `;
+          tbody.appendChild(row);
+        }
+      });
+    }
+
+    function getStatusClass(status) {
+      switch (status) {
+        case '良好': return 'status-good';
+        case '一般': return 'status-warning';
+        case '需调整': return 'status-poor';
+        default: return '';
+      }
+    }
+
+    // ==================== 摄像头设备管理 ====================
+    async function updateCameraList() {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const videoDevices = devices.filter(device => device.kind === 'videoinput');
+        const select = document.getElementById('cameraSelect');
+
+        const currentValue = select.value;
+        select.innerHTML = '<option value="">选择摄像头...</option>';
+
+        videoDevices.forEach(device => {
+          const option = document.createElement('option');
+          option.value = device.deviceId;
+          option.text = device.label || `摄像头 ${select.options.length}`;
+          select.appendChild(option);
+        });
+
+        if (currentValue && videoDevices.some(d => d.deviceId === currentValue)) {
+          select.value = currentValue;
+        }
+      } catch (error) {
+        console.error('获取摄像头设备失败:', error);
+      }
+    }
+
+    async function changeCamera() {
+      const select = document.getElementById('cameraSelect');
+      const deviceId = select.value;
+
+      if (!deviceId) return;
+
+      currentCameraDeviceId = deviceId;
+
+      if (isLiveMode) {
+        stopLiveCorrection();
+        setTimeout(startLiveCorrection, 500);
+      }
+    }
+
+    // ==================== 实时纠正其他功能 - 移动端优化 ====================
+    function capturePose() {
+      if (!currentPose) {
+        showMessage('未检测到姿势', 'warning');
+        return;
+      }
+
+      referencePose = JSON.parse(JSON.stringify(currentPose));
+      showMessage('姿势已捕捉为参考姿势', 'success');
+
+      showCountdown(() => {
+        showMessage('开始与参考姿势对比', 'info');
+      });
+    }
+
+    function showCountdown(callback) {
+      const overlay = document.createElement('div');
+      overlay.className = 'countdown-overlay';
+      const cameraContainer = document.querySelector('.camera-container');
+      if (cameraContainer) {
+        cameraContainer.appendChild(overlay);
+      }
+
+      let count = 3;
+      overlay.textContent = count;
+
+      const timer = setInterval(() => {
+        count--;
+        if (count > 0) {
+          overlay.textContent = count;
+        } else {
+          overlay.textContent = '开始！';
+          setTimeout(() => {
+            clearInterval(timer);
+            overlay.remove();
+            if (callback) callback();
+          }, 500);
+        }
+      }, 1000);
+    }
+
+    function toggleRecording() {
+      const recordBtn = document.getElementById('recordBtn');
+
+      if (!isRecording) {
+        startRecording();
+        recordBtn.innerHTML = '<i class="fas fa-stop"></i> 停止录制';
+        recordBtn.className = 'btn btn-danger';
+        showMessage('开始录制视频...', 'info');
+      } else {
+        stopRecording();
+        recordBtn.innerHTML = '<i class="fas fa-circle"></i> 开始录制';
+        recordBtn.className = 'btn btn-warning';
+        showMessage('录制已停止', 'info');
+      }
+    }
+
+    function startRecording() {
+      if (!liveStream) return;
+
+      recordedChunks = [];
+
+      // 移动端优化：使用适合移动设备的MIME类型
+      const mimeType = isIOS ? 'video/mp4' : 'video/webm';
+
+      try {
+        mediaRecorder = new MediaRecorder(liveStream, {
+          mimeType: mimeType
+        });
+      } catch (e) {
+        console.log('使用默认MIME类型');
+        mediaRecorder = new MediaRecorder(liveStream);
+      }
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          recordedChunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, {
+          type: isIOS ? 'video/mp4' : 'video/webm'
+        });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `wellgo_recording_${new Date().getTime()}.${isIOS ? 'mp4' : 'webm'}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        URL.revokeObjectURL(url);
+
+        showMessage('视频已保存到下载文件夹', 'success');
+      };
+
+      mediaRecorder.start();
+      isRecording = true;
+
+      // 移动端优化：添加录制时间限制
+      if (isMobileDevice) {
+        setTimeout(() => {
+          if (isRecording) {
+            stopRecording();
+            showMessage('录制已达到最大时长限制（30秒）', 'info');
+          }
+        }, 30000);
+      }
+    }
+
+    function stopRecording() {
+      if (mediaRecorder && isRecording) {
+        mediaRecorder.stop();
+        isRecording = false;
+      }
+    }
+
+    function analyzeCurrentPose() {
+      if (!currentPose) {
+        showMessage('未检测到姿势', 'warning');
+        return;
+      }
+
+      showMessage('正在分析当前姿势...', 'info');
+
+      setTimeout(() => {
+        const accuracy = 70 + Math.random() * 25;
+        const feedback = generateDetailedFeedback(currentPose);
+
+        showMessage(`分析完成！准确度: ${accuracy.toFixed(1)}%`, 'success');
+
+        const feedbackContainer = document.getElementById('feedbackMessages');
+        const feedbackElement = document.createElement('div');
+        feedbackElement.className = 'feedback-message good';
+        feedbackElement.innerHTML = `
+          <div class="feedback-icon">
+            <i class="fas fa-chart-bar"></i>
+          </div>
+          <div class="feedback-content">
+            <div class="feedback-title">姿势分析报告</div>
+            <div class="feedback-text">
+              准确度: ${accuracy.toFixed(1)}%<br>
+              ${feedback}
+            </div>
+          </div>
+        `;
+
+        feedbackContainer.appendChild(feedbackElement);
+
+      }, 1000);
+    }
+
+    function generateDetailedFeedback(pose) {
+      const feedbacks = [
+        '手臂姿势良好，保持当前角度',
+        '腿部支撑稳定，核心收紧',
+        '注意头部位置，保持平视前方',
+        '肩部放松，避免耸肩',
+        '呼吸均匀，保持节奏'
+      ];
+
+      return feedbacks[Math.floor(Math.random() * feedbacks.length)];
+    }
+
+    function resetCorrection() {
+      referencePose = null;
+
+      document.querySelectorAll('.metric-value').forEach(el => {
+        el.textContent = '0%';
+      });
+
+      document.querySelectorAll('.metric-status').forEach(el => {
+        el.textContent = '需要改进';
+        el.className = 'metric-status status-poor';
+      });
+
+      document.getElementById('feedbackMessages').innerHTML = '';
+      document.getElementById('poseDataBody').innerHTML = '';
+      document.getElementById('progressBar').style.width = '0%';
+      document.getElementById('progressText').textContent = '0%';
+
+      document.getElementById('poseSkeleton').innerHTML = '';
+      document.getElementById('poseLandmarks').innerHTML = '';
+
+      showMessage('已重置纠正模块', 'info');
+    }
+
+    function toggleFullscreen(videoId) {
+      const video = document.getElementById(videoId);
+
+      if (!document.fullscreenElement) {
+        if (video.requestFullscreen) {
+          video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) { /* Safari */
+          video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) { /* IE11 */
+          video.msRequestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) { /* Safari */
+          document.webkitExitFullscreen();
+        } else if (document.msExitFullscreen) { /* IE11 */
+          document.msExitFullscreen();
+        }
+      }
+    }
+
+    // ==================== 移动端特定功能 ====================
+    function handleOrientationChange() {
+      if (isLiveMode) {
+        // 重新启动摄像头以适应新的方向
+        setTimeout(() => {
+          stopLiveCorrection();
+          setTimeout(startLiveCorrection, 500);
+        }, 300);
+      }
+    }
+
+    // 检测设备方向变化
+    window.addEventListener('orientationchange', handleOrientationChange);
+
+    // 检测屏幕尺寸变化
+    window.addEventListener('resize', () => {
+      if (isMobileDevice && isLiveMode) {
+        // 延迟处理以避免频繁重启
+        clearTimeout(window.resizeTimer);
+        window.resizeTimer = setTimeout(handleOrientationChange, 250);
+      }
+    });
+
+    // ==================== 工具函数 ====================
+    function showMessage(message, type, duration = 5000) {
+      const status = document.getElementById('statusMessage');
+      status.textContent = message;
+      status.className = `status-message ${type}`;
+      status.style.display = 'flex';
+
+      let icon = '';
+      switch (type) {
+        case 'success': icon = '<i class="fas fa-check-circle"></i>'; break;
+        case 'error': icon = '<i class="fas fa-exclamation-circle"></i>'; break;
+        case 'info': icon = '<i class="fas fa-info-circle"></i>'; break;
+      }
+      status.innerHTML = icon + message;
+
+      setTimeout(() => {
+        status.style.display = 'none';
+      }, duration);
+    }
+
+    // ==================== 页面初始化 ====================
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.auth-tab').forEach(tab => {
+        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+      });
+
+      document.getElementById('regName').addEventListener('input', function () {
+        const value = this.value.trim();
+        if (value && !validateUsername(value)) {
+          showFormError('regName', '用户名应为2-20个字符（中文、英文、数字、下划线）');
+        } else {
+          clearFormError('regName');
+        }
+      });
+
+      document.getElementById('regEmail').addEventListener('input', function () {
+        const value = this.value.trim();
+        if (value && !validateEmail(value)) {
+          showFormError('regEmail', '请输入有效的邮箱地址');
+        } else {
+          clearFormError('regEmail');
+        }
+      });
+
+      document.getElementById('regPassword').addEventListener('input', function () {
+        const value = this.value.trim();
+        if (value && !validatePassword(value)) {
+          showFormError('regPassword', '密码至少6位，且包含字母和数字');
+        } else {
+          clearFormError('regPassword');
+        }
+      });
+
+      document.getElementById('confirmPassword').addEventListener('input', function () {
+        const password = document.getElementById('regPassword').value.trim();
+        const confirm = this.value.trim();
+        if (confirm && password !== confirm) {
+          showFormError('confirmPassword', '两次输入的密码不一致');
+        } else {
+          clearFormError('confirmPassword');
+        }
+      });
+
+      initUploadHandlers();
+      checkAuth();
+
+      document.getElementById('historyDetailModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+          closeHistoryDetail();
+        }
+      });
+
+      // 移动端优化：添加触摸关闭功能
+      document.getElementById('historyDetailModal').addEventListener('touchstart', function (e) {
+        if (e.target === this) {
+          this.touchStartY = e.touches[0].clientY;
+        }
+      });
+
+      document.getElementById('historyDetailModal').addEventListener('touchend', function (e) {
+        if (e.target === this && e.changedTouches[0].clientY - this.touchStartY > 100) {
+          closeHistoryDetail();
+        }
+      });
+
+      if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+        updateCameraList();
+        navigator.mediaDevices.addEventListener('devicechange', updateCameraList);
+      }
+
+      // 移动端优化：添加触摸手势支持
+      document.addEventListener('touchstart', handleTouchStartGlobal, { passive: true });
+      document.addEventListener('touchend', handleTouchEndGlobal, { passive: true });
+
+      // 移动端键盘弹出/收起处理
+      if (isMobileDevice) {
+        window.addEventListener('resize', () => {
+          if (document.activeElement && document.activeElement.tagName === 'INPUT') {
+            // 输入框聚焦时，确保可见
+            setTimeout(() => {
+              document.activeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+          }
+        });
+      }
+
+      // 移动端防止下拉刷新
+      document.addEventListener('touchmove', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+          return;
+        }
+        if (window.scrollY === 0 && e.touches[0].clientY > e.touches[0].clientY) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+    });
+
+    // 全局触摸处理
+    function handleTouchStartGlobal(e) {
+      // 可以添加全局触摸逻辑
+    }
+
+    function handleTouchEndGlobal(e) {
+      // 可以添加全局触摸逻辑
+    }
+
+    function clearFormError(fieldId) {
+      const field = document.getElementById(fieldId);
+      const errorElement = document.getElementById(`${fieldId}Error`);
+      const formGroup = field.closest('.form-group');
+
+      formGroup.classList.remove('error');
+      errorElement.classList.remove('show');
+      errorElement.innerHTML = '';
+    }
+
+    // 移动端优化：防止视频自动全屏播放
+    document.addEventListener('click', (e) => {
+      if (isIOS && e.target.tagName === 'VIDEO') {
+        e.target.play();
+      }
+    });
+
+    window.addEventListener('beforeunload', () => {
+      if (standardVideo) URL.revokeObjectURL(URL.createObjectURL(standardVideo));
+      if (practiceVideo) URL.revokeObjectURL(URL.createObjectURL(practiceVideo));
+
+      if (isLiveMode) {
+        stopLiveCorrection();
+      }
+
+      if (navigator.mediaDevices && navigator.mediaDevices.removeEventListener) {
+        navigator.mediaDevices.removeEventListener('devicechange', updateCameraList);
+      }
+
+      // 移除方向变化监听
+      window.removeEventListener('orientationchange', handleOrientationChange);
+    });
+
+    // 移动端优化：防止页面缩放
+    document.addEventListener('gesturestart', (e) => {
+      e.preventDefault();
+    });
+
+    // 移动端优化：隐藏地址栏
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        window.scrollTo(0, 1);
+      }, 0);
+    });
+  </script>
+</body>
+
+</html>

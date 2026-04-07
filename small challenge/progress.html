@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WellGo - 学习进度</title>
+  <style>
+    /* ============================================
+           全局变量
+           ============================================ */
+    :root {
+      /* 颜色定义 */
+      --primary: #667eea;
+      --primary-light: #818cf8;
+      --primary-dark: #5a67d8;
+      --secondary: #10b981;
+      --secondary-light: #34d399;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --accent: #7c3aed;
+
+      /* 背景色 */
+      --bg-primary: #ffffff;
+      --bg-secondary: #f8fafc;
+      --bg-tertiary: #e2e8f0;
+
+      /* 文本色 */
+      --text-primary: #1e293b;
+      --text-secondary: #475569;
+      --text-light: #64748b;
+
+      /* 边框 */
+      --border: #cbd5e1;
+      --border-light: #e2e8f0;
+
+      /* 阴影 */
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+      /* 圆角 */
+      --radius: 8px;
+      --radius-lg: 12px;
+      --radius-xl: 16px;
+
+      /* 过渡 */
+      --transition: all 0.3s ease;
+    }
+
+    /* ============================================
+           重置和基础样式
+           ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* ============================================
+           导航栏样式（与主应用保持一致）
+           ============================================ */
+    .navbar {
+      background: var(--bg-primary);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid var(--border-light);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .nav-brand i {
+      font-size: 1.75rem;
+    }
+
+    .nav-brand .logo-text {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 800;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: var(--radius);
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--primary);
+      background: var(--bg-secondary);
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .logout-btn {
+      padding: 6px 12px;
+      background: var(--bg-secondary);
+      border: none;
+      border-radius: var(--radius);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .logout-btn:hover {
+      background: var(--border-light);
+    }
+
+    /* ============================================
+           进度页面内容样式
+           ============================================ */
+    .progress-container {
+      background: white;
+      min-height: calc(100vh - 72px);
+      border-radius: var(--radius-lg);
+      margin: 20px;
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+    }
+
+    .progress-header {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      padding: 3rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .progress-header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 400px;
+      height: 400px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+    }
+
+    .progress-header::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 300px;
+      height: 300px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 50%;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+      max-width: 800px;
+    }
+
+    .header-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+
+    .header-subtitle {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      margin-bottom: 1.5rem;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .stat-number {
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* ============================================
+           进度概览卡片
+           ============================================ */
+    .progress-content {
+      padding: 2rem;
+    }
+
+    .progress-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .progress-card {
+      background: var(--bg-primary);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border-light);
+      transition: var(--transition);
+    }
+
+    .progress-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-title i {
+      color: var(--primary);
+    }
+
+    /* ============================================
+           技能水平仪表盘
+           ============================================ */
+    .skill-levels {
+      margin-bottom: 2rem;
+    }
+
+    .skill-item {
+      margin-bottom: 1.5rem;
+    }
+
+    .skill-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.5rem;
+    }
+
+    .skill-name {
+      font-weight: 500;
+    }
+
+    .skill-percentage {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .skill-bar {
+      height: 10px;
+      background: var(--bg-tertiary);
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+    .skill-progress {
+      height: 100%;
+      border-radius: 5px;
+      transition: width 1s ease;
+    }
+
+    /* 不同技能的颜色 */
+    .skill-1 .skill-progress {
+      background: linear-gradient(90deg, var(--primary), var(--primary-light));
+    }
+
+    .skill-2 .skill-progress {
+      background: linear-gradient(90deg, var(--secondary), var(--secondary-light));
+    }
+
+    .skill-3 .skill-progress {
+      background: linear-gradient(90deg, var(--warning), #fbbf24);
+    }
+
+    .skill-4 .skill-progress {
+      background: linear-gradient(90deg, var(--accent), #8b5cf6);
+    }
+
+    /* ============================================
+           成就系统
+           ============================================ */
+    .achievements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 1rem;
+    }
+
+    .achievement-item {
+      text-align: center;
+      padding: 1rem;
+      border-radius: var(--radius);
+      background: var(--bg-secondary);
+      transition: var(--transition);
+    }
+
+    .achievement-item.unlocked {
+      background: linear-gradient(135deg, var(--bg-secondary), rgba(102, 126, 234, 0.1));
+      border: 2px solid var(--primary-light);
+    }
+
+    .achievement-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 0.5rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .achievement-item.unlocked .achievement-icon {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+    }
+
+    .achievement-item.locked .achievement-icon {
+      background: var(--bg-tertiary);
+      color: var(--text-light);
+    }
+
+    .achievement-name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .achievement-desc {
+      font-size: 0.8rem;
+      color: var(--text-light);
+    }
+
+    /* ============================================
+           学习历史
+           ============================================ */
+    .history-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      border-bottom: 1px solid var(--border-light);
+      gap: 1rem;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      background: var(--bg-secondary);
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    .history-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.9rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+    }
+
+    .history-details {
+      flex: 1;
+    }
+
+    .history-title {
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+    }
+
+    .history-time {
+      font-size: 0.85rem;
+      color: var(--text-light);
+    }
+
+    .history-score {
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    /* ============================================
+           图表容器
+           ============================================ */
+    .chart-container {
+      height: 200px;
+      margin-top: 1rem;
+      position: relative;
+    }
+
+    /* ============================================
+           月度统计
+           ============================================ */
+    .month-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .month-stat {
+      text-align: center;
+      padding: 0.75rem 0.5rem;
+      background: var(--bg-secondary);
+      border-radius: var(--radius);
+    }
+
+    .stat-month {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-count {
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    /* ============================================
+           改进建议
+           ============================================ */
+    .suggestions-list {
+      list-style: none;
+    }
+
+    .suggestion-item {
+      padding: 0.75rem 0;
+      border-bottom: 1px solid var(--border-light);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+
+    .suggestion-item:last-child {
+      border-bottom: none;
+    }
+
+    .suggestion-icon {
+      color: var(--warning);
+      font-size: 1.2rem;
+      margin-top: 0.1rem;
+    }
+
+    .suggestion-text {
+      flex: 1;
+    }
+
+    /* ============================================
+           按钮样式
+           ============================================ */
+    .btn {
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: var(--radius);
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    /* ============================================
+           空状态
+           ============================================ */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--text-light);
+    }
+
+    .empty-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.3;
+    }
+
+    /* ============================================
+           消息提示样式
+           ============================================ */
+    .message {
+      padding: 1rem;
+      border-radius: var(--radius);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .message.info {
+      background: var(--bg-secondary);
+      border-left: 4px solid var(--primary);
+    }
+
+    .message.warning {
+      background: #fef3c7;
+      border-left: 4px solid var(--warning);
+      color: #92400e;
+    }
+
+    .message.error {
+      background: #fee2e2;
+      border-left: 4px solid var(--danger);
+      color: #991b1b;
+    }
+
+    /* ============================================
+           加载状态
+           ============================================ */
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 3px solid var(--bg-tertiary);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ============================================
+           响应式设计
+           ============================================ */
+    @media (max-width: 768px) {
+      .progress-container {
+        margin: 10px;
+      }
+
+      .progress-header {
+        padding: 2rem 1rem;
+      }
+
+      .header-title {
+        font-size: 2rem;
+      }
+
+      .header-stats {
+        gap: 1rem;
+      }
+
+      .stat-number {
+        font-size: 1.5rem;
+      }
+
+      .progress-content {
+        padding: 1rem;
+      }
+
+      .progress-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .achievements-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+  <!-- 导航栏 -->
+  <nav class="navbar">
+    <div class="nav-brand">
+      <i class="fas fa-heartbeat"></i>
+      <span class="logo-text">WellGo</span>
+      <span style="font-size: 0.9rem; color: var(--text-secondary);">智能舞蹈体操教学评估平台</span>
+    </div>
+    <div class="nav-links">
+      <a href="./video-upload(3).html" class="nav-link">
+        <i class="fas fa-home"></i> 首页
+      </a>
+      <a href="./LearningPage.html" class="nav-link">
+        <i class="fas fa-dumbbell"></i> 学习
+      </a>
+      <a href="./progress.html" class="nav-link active">
+        <i class="fas fa-chart-line"></i> 进度
+      </a>
+      <a href="#" class="nav-link">
+        <i class="fas fa-graduation-cap"></i> 课程
+      </a>
+    </div>
+    <div class="user-menu">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <span id="userName">加载中...</span>
+      <button class="logout-btn" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> 退出
+      </button>
+    </div>
+  </nav>
+
+  <!-- 进度页面内容 -->
+  <div class="progress-container">
+    <!-- 头部区域 -->
+    <div class="progress-header">
+      <div class="header-content">
+        <h1 class="header-title">
+          <i class="fas fa-trophy"></i> 学习进度概览
+        </h1>
+        <p class="header-subtitle">
+          跟踪您的学习进度，查看技能提升情况
+        </p>
+        <div class="header-stats">
+          <div class="stat-item">
+            <span class="stat-number" id="totalPractice">0</span>
+            <span class="stat-label">总练习次数</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="avgScore">0</span>
+            <span class="stat-label">平均得分</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="totalTime">0</span>
+            <span class="stat-label">总学习时长(小时)</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" id="achievements">0</span>
+            <span class="stat-label">已获成就</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 主要内容区域 -->
+    <div class="progress-content">
+      <!-- 提示信息区域 -->
+      <div id="messageContainer"></div>
+
+      <!-- 主要内容网格 -->
+      <div class="progress-grid">
+        <!-- 技能水平卡片 -->
+        <div class="progress-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-chart-bar"></i> 技能水平
+            </h2>
+            <span class="skill-overall" id="overallLevel">--</span>
+          </div>
+          <div class="skill-levels">
+            <div class="skill-item skill-1">
+              <div class="skill-info">
+                <span class="skill-name">动作规范性</span>
+                <span class="skill-percentage">0%</span>
+              </div>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="skill-item skill-2">
+              <div class="skill-info">
+                <span class="skill-name">节奏匹配度</span>
+                <span class="skill-percentage">0%</span>
+              </div>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="skill-item skill-3">
+              <div class="skill-info">
+                <span class="skill-name">动作流畅性</span>
+                <span class="skill-percentage">0%</span>
+              </div>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 0%"></div>
+              </div>
+            </div>
+            <div class="skill-item skill-4">
+              <div class="skill-info">
+                <span class="skill-name">力量控制</span>
+                <span class="skill-percentage">0%</span>
+              </div>
+              <div class="skill-bar">
+                <div class="skill-progress" style="width: 0%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 成就卡片 -->
+        <div class="progress-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-award"></i> 成就系统
+            </h2>
+            <span id="achievementsCount">0/12</span>
+          </div>
+          <div class="achievements-grid" id="achievementsGrid">
+            <div class="empty-state">
+              <div class="empty-icon">🏆</div>
+              <p>加载成就数据中...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 最近练习历史 -->
+        <div class="progress-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-history"></i> 最近练习
+            </h2>
+            <button class="btn btn-primary" onclick="viewAllHistory()">
+              <i class="fas fa-list"></i> 查看全部
+            </button>
+          </div>
+          <div class="history-list" id="recentHistory">
+            <div class="empty-state">
+              <div class="empty-icon">📊</div>
+              <p>加载练习记录中...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 学习统计卡片 -->
+        <div class="progress-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-chart-line"></i> 学习统计
+            </h2>
+            <span id="trendIndicator">--</span>
+          </div>
+          <div class="chart-container">
+            <canvas id="progressChart"></canvas>
+          </div>
+          <p style="text-align: center; margin-top: 1rem; color: var(--text-light); font-size: 0.9rem;">
+            <i class="fas fa-info-circle"></i> 基于您的练习数据生成
+          </p>
+        </div>
+
+        <!-- 月度活动卡片 -->
+        <div class="progress-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-calendar-alt"></i> 月度活动
+            </h2>
+            <span id="currentMonth">本月</span>
+          </div>
+          <div class="month-stats" id="monthStats">
+            <div class="empty-state" style="padding: 1rem; grid-column: 1/-1;">
+              <p>加载月度数据中...</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 改进建议卡片 -->
+        <div class="progress-card">
+          <div class="card-header">
+            <h2 class="card-title">
+              <i class="fas fa-lightbulb"></i> 改进建议
+            </h2>
+          </div>
+          <ul class="suggestions-list" id="suggestionsList">
+            <div class="empty-state" style="padding: 1rem;">
+              <p>加载建议中...</p>
+            </div>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js 库 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    // ============================================
+    // 数据库配置（与主应用保持一致）
+    // ============================================
+    const DB_NAME = 'WellGoDB';
+    const DB_VERSION = 1;
+    const EVAL_STORE = 'evaluations';
+
+    // ============================================
+    // 全局变量
+    // ============================================
+    let currentUser = null;
+    let userEvaluations = [];
+    let chartInstance = null;
+
+    // ============================================
+    // 数据库操作函数
+    // ============================================
+
+    // 初始化数据库
+    async function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => resolve(request.result);
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          // 这里不需要创建表，因为主应用已经创建了
+        };
+      });
+    }
+
+    // 加载用户的评估历史
+    async function loadUserEvaluations() {
+      try {
+        // 检查用户是否登录
+        const savedUser = localStorage.getItem('wellgo_user');
+        if (!savedUser) {
+          throw new Error('用户未登录');
+        }
+
+        currentUser = JSON.parse(savedUser);
+
+        // 从数据库读取评估记录
+        const db = await initDB();
+        const tx = db.transaction(EVAL_STORE, 'readonly');
+        const store = tx.objectStore(EVAL_STORE);
+        const index = store.index('userId');
+
+        const evaluations = await new Promise((resolve, reject) => {
+          const req = index.getAll(currentUser.email);
+          req.onsuccess = () => resolve(req.result);
+          req.onerror = () => reject(req.error);
+        });
+
+        db.close();
+
+        return evaluations;
+
+      } catch (error) {
+        console.error('加载评估数据失败:', error);
+        return [];
+      }
+    }
+
+    // ============================================
+    // 工具函数
+    // ============================================
+
+    // 格式化时间
+    function formatEvaluationTime(isoString) {
+      if (!isoString) return '未知时间';
+
+      const date = new Date(isoString);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 60) {
+        return `${diffMins}分钟前`;
+      } else if (diffHours < 24) {
+        return `${diffHours}小时前`;
+      } else if (diffDays === 1) {
+        return '昨天';
+      } else if (diffDays < 7) {
+        return `${diffDays}天前`;
+      } else {
+        return date.toLocaleDateString('zh-CN');
+      }
+    }
+
+    // 根据视频名称获取图标
+    function getVideoIcon(videoName) {
+      if (!videoName) return '🎬';
+
+      const lowerName = videoName.toLowerCase();
+      if (lowerName.includes('舞蹈') || lowerName.includes('dance')) return '💃';
+      if (lowerName.includes('体操') || lowerName.includes('gym')) return '🤸';
+      if (lowerName.includes('基础') || lowerName.includes('basic')) return '📚';
+      if (lowerName.includes('技巧') || lowerName.includes('skill')) return '🎯';
+      if (lowerName.includes('力量') || lowerName.includes('strength')) return '💪';
+      if (lowerName.includes('拉伸') || lowerName.includes('stretch')) return '🧘';
+      return '🎬';
+    }
+
+    // ============================================
+    // 数据分析函数
+    // ============================================
+
+    // 计算统计数据
+    function calculateStatistics(evaluations) {
+      if (evaluations.length === 0) {
+        return {
+          totalPractice: 0,
+          avgScore: 0,
+          totalTime: 0,
+          achievementsCount: 0,
+          skillLevels: {
+            actionStandard: 0,
+            rhythmMatch: 0,
+            actionFlow: 0,
+            powerControl: 0
+          }
+        };
+      }
+
+      // 计算平均分
+      const avgScore = evaluations.reduce((sum, eval) => sum + eval.score, 0) / evaluations.length;
+
+      // 计算总练习时间（假设每次练习平均15分钟）
+      const totalTime = evaluations.length * 0.25;
+
+      // 计算技能水平
+      let actionStandard = 0;
+      let rhythmMatch = 0;
+      let actionFlow = 0;
+      let powerControl = 0;
+
+      evaluations.forEach(eval => {
+        if (eval.feedback && Array.isArray(eval.feedback)) {
+          eval.feedback.forEach(feedback => {
+            switch (feedback.title) {
+              case '动作规范性':
+                actionStandard += feedback.score;
+                break;
+              case '节奏匹配度':
+                rhythmMatch += feedback.score;
+                break;
+              case '动作流畅性':
+                actionFlow += feedback.score;
+                break;
+              case '力量控制':
+                powerControl += feedback.score;
+                break;
+            }
+          });
+        }
+      });
+
+      return {
+        totalPractice: evaluations.length,
+        avgScore: avgScore.toFixed(1),
+        totalTime: totalTime.toFixed(1),
+        achievementsCount: calculateAchievements(evaluations),
+        skillLevels: {
+          actionStandard: Math.round(actionStandard / evaluations.length),
+          rhythmMatch: Math.round(rhythmMatch / evaluations.length),
+          actionFlow: Math.round(actionFlow / evaluations.length),
+          powerControl: Math.round(powerControl / evaluations.length)
+        }
+      };
+    }
+
+    // 计算成就
+    function calculateAchievements(evaluations) {
+      if (evaluations.length === 0) return 0;
+
+      let achievementCount = 0;
+
+      // 成就1：初次尝试
+      if (evaluations.length >= 1) achievementCount++;
+
+      // 成就2：坚持不懈（有连续练习记录）
+      const hasConsecutiveDays = checkConsecutiveDays(evaluations);
+      if (hasConsecutiveDays) achievementCount++;
+
+      // 成就3：精准大师（有90分以上记录）
+      const hasHighScore = evaluations.some(e => e.score >= 90);
+      if (hasHighScore) achievementCount++;
+
+      // 成就4：进步之星（分数有提升）
+      const hasImprovement = checkScoreImprovement(evaluations);
+      if (hasImprovement) achievementCount++;
+
+      return Math.min(achievementCount, 4); // 最多显示4个基础成就
+    }
+
+    // 检查连续练习天数
+    function checkConsecutiveDays(evaluations) {
+      if (evaluations.length < 2) return false;
+
+      // 简单检查：如果有2天都有练习就算连续
+      const dates = evaluations.map(e => new Date(e.createdAt).toDateString());
+      const uniqueDates = [...new Set(dates)];
+      return uniqueDates.length >= 2;
+    }
+
+    // 检查分数提升
+    function checkScoreImprovement(evaluations) {
+      if (evaluations.length < 2) return false;
+
+      // 按时间排序
+      const sortedEvals = [...evaluations].sort((a, b) =>
+        new Date(a.createdAt) - new Date(b.createdAt)
+      );
+
+      // 检查最后几次练习是否有提升
+      const recentEvals = sortedEvals.slice(-3);
+      const scores = recentEvals.map(e => e.score);
+
+      // 如果有任何提升就返回true
+      for (let i = 1; i < scores.length; i++) {
+        if (scores[i] > scores[i - 1]) return true;
+      }
+
+      return false;
+    }
+
+    // 生成月度统计数据
+    function generateMonthlyStats(evaluations) {
+      const monthlyData = {};
+
+      evaluations.forEach(eval => {
+        if (eval.createdAt) {
+          const date = new Date(eval.createdAt);
+          const monthKey = `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+
+          if (!monthlyData[monthKey]) {
+            monthlyData[monthKey] = 0;
+          }
+          monthlyData[monthKey]++;
+        }
+      });
+
+      // 转换为数组并取最近6个月
+      const months = Object.keys(monthlyData)
+        .sort()
+        .slice(-6)
+        .map(key => {
+          const [year, month] = key.split('-');
+          return {
+            month: `${parseInt(month)}月`,
+            count: monthlyData[key],
+            color: parseInt(month) % 2 === 0 ? '#667eea' : '#764ba2'
+          };
+        });
+
+      return months;
+    }
+
+    // 生成改进建议
+    function generateSuggestions(stats, evaluations) {
+      const suggestions = [];
+
+      // 基于技能水平的建议
+      if (stats.skillLevels.powerControl < 70) {
+        suggestions.push('力量控制方面还有提升空间，建议加强核心力量训练');
+      }
+
+      if (stats.skillLevels.rhythmMatch < 75) {
+        suggestions.push('节奏匹配度可以进一步提高，尝试使用节拍器辅助练习');
+      }
+
+      if (stats.skillLevels.actionStandard >= 85) {
+        suggestions.push('动作规范性已经很好，继续保持并尝试更多变化');
+      }
+
+      // 基于练习频率的建议
+      if (evaluations.length < 5) {
+        suggestions.push('练习次数较少，建议每周保持至少3次练习，形成良好习惯');
+      } else if (evaluations.length >= 10) {
+        suggestions.push('练习很勤奋！可以考虑挑战更高难度的动作');
+      }
+
+      // 基于进步趋势的建议
+      if (stats.avgScore < 70) {
+        suggestions.push('建议从基础动作开始，先确保动作准确性再追求流畅性');
+      } else if (stats.avgScore >= 85) {
+        suggestions.push('表现优秀！可以尝试学习更复杂的舞蹈组合');
+      }
+
+      // 添加通用建议
+      suggestions.push('观看高分学员的视频示范，学习他们的技巧和方法');
+      suggestions.push('每次练习前进行充分的热身，避免运动损伤');
+      suggestions.push('记录每次练习的感受和问题，便于针对性改进');
+
+      return suggestions.slice(0, 5); // 最多显示5条建议
+    }
+
+    // ============================================
+    // UI更新函数
+    // ============================================
+
+    function updateUserInfo() {
+      if (currentUser) {
+        document.getElementById('userName').textContent = currentUser.name;
+        document.getElementById('userAvatar').textContent = currentUser.name.charAt(0);
+      }
+    }
+
+    function updateStatistics(stats) {
+      document.getElementById('totalPractice').textContent = stats.totalPractice;
+      document.getElementById('avgScore').textContent = stats.avgScore;
+      document.getElementById('totalTime').textContent = stats.totalTime;
+      document.getElementById('achievements').textContent = stats.achievementsCount;
+      document.getElementById('achievementsCount').textContent = `${stats.achievementsCount}/12`;
+
+      // 更新整体水平
+      const avgScore = parseFloat(stats.avgScore);
+      let overallLevel = '初级';
+      let levelColor = '#f59e0b';
+
+      if (avgScore >= 85) {
+        overallLevel = '高级';
+        levelColor = '#10b981';
+      } else if (avgScore >= 75) {
+        overallLevel = '中级';
+        levelColor = '#3b82f6';
+      }
+
+      const levelElement = document.getElementById('overallLevel');
+      levelElement.textContent = overallLevel;
+      levelElement.style.color = levelColor;
+
+      // 更新趋势指示
+      const trendElement = document.getElementById('trendIndicator');
+      if (stats.totalPractice >= 10 && avgScore >= 80) {
+        trendElement.textContent = '↑ 提升中';
+        trendElement.style.color = '#10b981';
+      } else if (stats.totalPractice >= 5) {
+        trendElement.textContent = '→ 稳定';
+        trendElement.style.color = '#f59e0b';
+      } else {
+        trendElement.textContent = '新开始';
+        trendElement.style.color = '#64748b';
+      }
+    }
+
+    function updateSkillLevels(skillLevels) {
+      const skillElements = [
+        { name: '动作规范性', value: skillLevels.actionStandard || 0 },
+        { name: '节奏匹配度', value: skillLevels.rhythmMatch || 0 },
+        { name: '动作流畅性', value: skillLevels.actionFlow || 0 },
+        { name: '力量控制', value: skillLevels.powerControl || 0 }
+      ];
+
+      document.querySelectorAll('.skill-item').forEach((item, index) => {
+        if (skillElements[index]) {
+          const percentageElement = item.querySelector('.skill-percentage');
+          const progressBar = item.querySelector('.skill-progress');
+
+          percentageElement.textContent = `${skillElements[index].value}%`;
+          progressBar.style.width = `${skillElements[index].value}%`;
+
+          // 根据分数设置颜色
+          if (skillElements[index].value >= 85) {
+            progressBar.style.background = 'linear-gradient(90deg, #10b981, #34d399)';
+          } else if (skillElements[index].value >= 70) {
+            progressBar.style.background = 'linear-gradient(90deg, #f59e0b, #fbbf24)';
+          }
+        }
+      });
+    }
+
+    function renderAchievements(evaluations) {
+      const grid = document.getElementById('achievementsGrid');
+      const stats = calculateStatistics(evaluations);
+
+      const achievements = [
+        {
+          id: 1,
+          name: '初次尝试',
+          desc: '完成第一次评估',
+          unlocked: evaluations.length >= 1,
+          icon: '🎯'
+        },
+        {
+          id: 2,
+          name: '坚持不懈',
+          desc: '有连续练习记录',
+          unlocked: checkConsecutiveDays(evaluations),
+          icon: '🔥'
+        },
+        {
+          id: 3,
+          name: '精准大师',
+          desc: '单次评估90分以上',
+          unlocked: evaluations.some(e => e.score >= 90),
+          icon: '🎯'
+        },
+        {
+          id: 4,
+          name: '进步之星',
+          desc: '分数有明显提升',
+          unlocked: checkScoreImprovement(evaluations),
+          icon: '⭐'
+        },
+        {
+          id: 5,
+          name: '勤奋学员',
+          desc: '完成5次以上练习',
+          unlocked: evaluations.length >= 5,
+          icon: '📚'
+        },
+        {
+          id: 6,
+          name: '优秀学员',
+          desc: '平均分80分以上',
+          unlocked: parseFloat(stats.avgScore) >= 80,
+          icon: '🏆'
+        }
+      ];
+
+      grid.innerHTML = achievements.map(achievement => `
+                <div class="achievement-item ${achievement.unlocked ? 'unlocked' : 'locked'}" 
+                     title="${achievement.desc}">
+                    <div class="achievement-icon">
+                        ${achievement.icon}
+                    </div>
+                    <div class="achievement-name">${achievement.name}</div>
+                    <div class="achievement-desc">${achievement.desc}</div>
+                </div>
+            `).join('');
+    }
+
+    function renderRecentHistory(evaluations) {
+      const historyList = document.getElementById('recentHistory');
+
+      if (evaluations.length === 0) {
+        historyList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📊</div>
+                        <p>暂无练习记录</p>
+                        <p style="font-size: 0.9rem; margin-top: 0.5rem;">
+                            开始您的第一次评估吧！
+                        </p>
+                    </div>
+                `;
+        return;
+      }
+
+      // 按时间排序，取最近的5条
+      const recentEvals = [...evaluations]
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+        .slice(0, 5);
+
+      historyList.innerHTML = recentEvals.map(eval => {
+        // 根据分数确定颜色
+        let scoreColor = '#10b981'; // 绿色
+        if (eval.score < 70) scoreColor = '#ef4444'; // 红色
+        else if (eval.score < 85) scoreColor = '#f59e0b'; // 黄色
+
+        const videoName = eval.practiceVideoName || '未命名练习';
+        const timeStr = formatEvaluationTime(eval.createdAt);
+        const icon = getVideoIcon(videoName);
+
+        return `
+                    <div class="history-item" onclick="viewHistoryDetail(${eval.id || 0})">
+                        <div class="history-icon">
+                            ${icon}
+                        </div>
+                        <div class="history-details">
+                            <div class="history-title">${videoName}</div>
+                            <div class="history-time">${timeStr}</div>
+                        </div>
+                        <div class="history-score" style="color: ${scoreColor}">
+                            ${Math.round(eval.score)}
+                        </div>
+                    </div>
+                `;
+      }).join('');
+    }
+
+    function renderMonthStats(monthlyStats) {
+      const monthStatsContainer = document.getElementById('monthStats');
+
+      if (monthlyStats.length === 0) {
+        monthStatsContainer.innerHTML = `
+                    <div class="empty-state" style="padding: 1rem; grid-column: 1/-1;">
+                        <p>暂无月度数据</p>
+                    </div>
+                `;
+        return;
+      }
+
+      monthStatsContainer.innerHTML = monthlyStats.map(stat => `
+                <div class="month-stat">
+                    <div class="stat-month">${stat.month}</div>
+                    <div class="stat-count" style="color: ${stat.color}">${stat.count}</div>
+                </div>
+            `).join('');
+    }
+
+    function renderSuggestions(suggestions) {
+      const suggestionsList = document.getElementById('suggestionsList');
+
+      if (suggestions.length === 0) {
+        suggestionsList.innerHTML = `
+                    <div class="empty-state" style="padding: 1rem;">
+                        <p>暂无建议</p>
+                    </div>
+                `;
+        return;
+      }
+
+      suggestionsList.innerHTML = suggestions.map(suggestion => `
+                <li class="suggestion-item">
+                    <div class="suggestion-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="suggestion-text">${suggestion}</div>
+                </li>
+            `).join('');
+    }
+
+    function initializeChart(evaluations) {
+      const ctx = document.getElementById('progressChart').getContext('2d');
+
+      // 如果已有图表实例，先销毁
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+
+      // 生成月度数据
+      const monthlyStats = generateMonthlyStats(evaluations);
+
+      if (monthlyStats.length === 0) {
+        // 显示无数据提示
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#64748b';
+        ctx.textAlign = 'center';
+        ctx.fillText('暂无图表数据', ctx.canvas.width / 2, ctx.canvas.height / 2);
+        return;
+      }
+
+      // 准备图表数据
+      const months = monthlyStats.map(stat => stat.month);
+      const counts = monthlyStats.map(stat => stat.count);
+
+      // 创建图表
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: months,
+          datasets: [{
+            label: '练习次数',
+            data: counts,
+            borderColor: '#667eea',
+            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+            borderWidth: 3,
+            fill: true,
+            tension: 0.4,
+            pointBackgroundColor: '#667eea',
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 8
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              mode: 'index',
+              intersect: false,
+              backgroundColor: 'rgba(30, 41, 59, 0.9)',
+              titleColor: '#ffffff',
+              bodyColor: '#ffffff',
+              borderColor: '#667eea',
+              borderWidth: 1
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              grid: {
+                color: 'rgba(203, 213, 225, 0.3)'
+              },
+              ticks: {
+                color: '#64748b',
+                stepSize: monthlyStats.length > 0 ? Math.max(1, Math.round(Math.max(...counts) / 5)) : 1
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              },
+              ticks: {
+                color: '#64748b'
+              }
+            }
+          },
+          interaction: {
+            intersect: false,
+            mode: 'nearest'
+          },
+          animation: {
+            duration: 1000,
+            easing: 'easeOutQuart'
+          }
+        }
+      });
+    }
+
+    // ============================================
+    // 主初始化函数
+    // ============================================
+    async function initializeProgressPage() {
+      try {
+        // 显示加载状态
+        showLoading(true);
+
+        // 加载用户评估数据
+        userEvaluations = await loadUserEvaluations();
+
+        // 更新用户信息
+        updateUserInfo();
+
+        if (userEvaluations.length === 0) {
+          showMessage('您还没有练习记录，开始您的第一次评估吧！', 'info');
+        }
+
+        // 计算统计数据
+        const stats = calculateStatistics(userEvaluations);
+
+        // 更新UI
+        updateStatistics(stats);
+        updateSkillLevels(stats.skillLevels);
+        renderAchievements(userEvaluations);
+        renderRecentHistory(userEvaluations);
+
+        // 生成和显示月度数据
+        const monthlyStats = generateMonthlyStats(userEvaluations);
+        renderMonthStats(monthlyStats);
+
+        // 生成和显示改进建议
+        const suggestions = generateSuggestions(stats, userEvaluations);
+        renderSuggestions(suggestions);
+
+        // 初始化图表
+        initializeChart(userEvaluations);
+
+      } catch (error) {
+        console.error('初始化失败:', error);
+        showMessage('加载数据失败，请刷新页面重试', 'error');
+      } finally {
+        showLoading(false);
+      }
+    }
+
+    // ============================================
+    // 工具函数
+    // ============================================
+    function showLoading(show) {
+      let loader = document.getElementById('loadingOverlay');
+
+      if (show && !loader) {
+        loader = document.createElement('div');
+        loader.id = 'loadingOverlay';
+        loader.className = 'loading-overlay';
+        loader.innerHTML = `
+                    <div class="loading-spinner"></div>
+                    <div>正在加载您的学习数据...</div>
+                `;
+        document.body.appendChild(loader);
+      } else if (!show && loader) {
+        loader.remove();
+      }
+    }
+
+    function showMessage(message, type = 'info') {
+      const container = document.getElementById('messageContainer');
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${type}`;
+      messageDiv.innerHTML = `
+                <i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+
+      container.appendChild(messageDiv);
+
+      // 5秒后自动移除
+      setTimeout(() => {
+        if (messageDiv.parentNode) {
+          messageDiv.remove();
+        }
+      }, 5000);
+    }
+
+    // ============================================
+    // 交互函数
+    // ============================================
+    function viewHistoryDetail(historyId) {
+      const evaluation = userEvaluations.find(e => e.id === historyId);
+      if (evaluation) {
+        alert(`查看历史详情：\n\n练习视频：${evaluation.practiceVideoName || '未命名'}\n标准视频：${evaluation.standardVideoName || '未命名'}\n得分：${evaluation.score}\n时间：${formatEvaluationTime(evaluation.createdAt)}\n\n您可以回到主页查看详细报告`);
+      }
+    }
+
+    function viewAllHistory() {
+      // 这里可以跳转到完整的历史记录页面
+      alert('跳转到完整历史记录页面\n（功能开发中）');
+    }
+
+    function logout() {
+      if (confirm('确定要退出登录吗？')) {
+        localStorage.removeItem('wellgo_user');
+        window.location.href = 'video-upload(4).html';
+      }
+    }
+
+    function refreshData() {
+      initializeProgressPage();
+    }
+
+    // ============================================
+    // 页面加载完成后初始化
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function () {
+      // 添加刷新按钮
+      const headerContent = document.querySelector('.header-content');
+      const refreshBtn = document.createElement('button');
+      refreshBtn.className = 'btn btn-primary';
+      refreshBtn.style.marginTop = '1rem';
+      refreshBtn.innerHTML = '<i class="fas fa-sync-alt"></i> 刷新数据';
+      refreshBtn.onclick = refreshData;
+      headerContent.appendChild(refreshBtn);
+
+      // 初始化页面
+      initializeProgressPage();
+
+      // 添加键盘快捷键
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'r' && e.ctrlKey) {
+          e.preventDefault();
+          refreshData();
+        }
+      });
+    });
+
+    // ============================================
+    // 动画效果
+    // ============================================
+    window.addEventListener('load', () => {
+      document.querySelector('.progress-container').style.opacity = '0';
+      document.querySelector('.progress-container').style.transform = 'translateY(20px)';
+
+      setTimeout(() => {
+        document.querySelector('.progress-container').style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        document.querySelector('.progress-container').style.opacity = '1';
+        document.querySelector('.progress-container').style.transform = 'translateY(0)';
+      }, 100);
+    });
+  </script>
+</body>
+
+</html>
